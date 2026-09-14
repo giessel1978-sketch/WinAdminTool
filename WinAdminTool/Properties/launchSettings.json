@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WinAdminTool (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "WinAdminTool (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
