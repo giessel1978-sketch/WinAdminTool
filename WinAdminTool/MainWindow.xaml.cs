@@ -19,6 +19,14 @@ public sealed partial class MainWindow : Window
         if (args.SelectedItem is not NavigationViewItem selectedItem)
             return;
 
+        string tag = selectedItem.Tag?.ToString() ?? string.Empty;
+
+        if (tag == "Overview")
+        {
+            ContentFrame.Content = new Views.OverviewPage();
+            return;
+        }
+
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
         ContentFrame.Content = new TextBlock
@@ -30,4 +38,5 @@ public sealed partial class MainWindow : Window
             VerticalAlignment = VerticalAlignment.Center
         };
     }
+
 }

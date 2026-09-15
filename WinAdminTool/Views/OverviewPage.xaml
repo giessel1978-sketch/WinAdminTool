@@ -1,0 +1,249 @@
+<Page x:Class="WinAdminTool.Views.OverviewPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel
+        Spacing="20"
+        Padding="30">
+
+            <!-- Überschrift -->
+
+            <StackPanel Spacing="4">
+                <TextBlock
+                Text="Übersicht"
+                FontSize="32"
+                FontWeight="SemiBold"/>
+
+                <TextBlock
+                Text="Systemübersicht des aktuellen Computers"
+                FontSize="15"
+                Opacity="0.7"/>
+            </StackPanel>
+
+            <!-- System / CPU -->
+
+            <Grid ColumnSpacing="16">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- System -->
+
+                <Border
+                Grid.Column="0"
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <StackPanel Spacing="10">
+
+                        <TextBlock
+                        Text="System"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                        <TextBlock
+                        Text="Computername"
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        Text="Wird ermittelt..."
+                        x:Name="ComputerNameText"
+                        FontSize="16"/>
+
+                        <TextBlock
+                        Text="Windows"
+                        Opacity="0.7"
+                        Margin="0,8,0,0"/>
+
+                        <TextBlock
+                        Text="Wird ermittelt..."
+                        x:Name="WindowsVersionText"
+                        FontSize="16"/>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- CPU -->
+
+                <Border
+                Grid.Column="1"
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <StackPanel Spacing="10">
+
+                        <TextBlock
+                        Text="CPU"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                        <TextBlock
+                        Text="Auslastung"
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        Text="Wird ermittelt..."
+                        x:Name="CpuUsageText"
+                        FontSize="28"
+                        FontWeight="SemiBold"/>
+
+                        <ProgressBar
+                        x:Name="CpuProgressBar"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="0"
+                        Height="8"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+            <!-- Arbeitsspeicher / Speicher -->
+
+            <Grid ColumnSpacing="16">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- RAM -->
+
+                <Border
+                Grid.Column="0"
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <StackPanel Spacing="10">
+
+                        <TextBlock
+                        Text="Arbeitsspeicher"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                        <TextBlock
+                        Text="Auslastung"
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        Text="Wird ermittelt..."
+                        x:Name="MemoryUsageText"
+                        FontSize="28"
+                        FontWeight="SemiBold"/>
+
+                        <ProgressBar
+                        x:Name="MemoryProgressBar"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="0"
+                        Height="8"/>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- Speicher -->
+
+                <Border
+                Grid.Column="1"
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <StackPanel Spacing="10">
+
+                        <TextBlock
+                        Text="Systemlaufwerk"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                        <TextBlock
+                        Text="Belegung"
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        Text="Wird ermittelt..."
+                        x:Name="StorageUsageText"
+                        FontSize="28"
+                        FontWeight="SemiBold"/>
+
+                        <ProgressBar
+                        x:Name="StorageProgressBar"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="0"
+                        Height="8"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+            <!-- Netzwerk -->
+
+            <Border
+            Padding="20"
+            CornerRadius="8"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="10">
+
+                    <TextBlock
+                    Text="Netzwerk"
+                    FontSize="20"
+                    FontWeight="SemiBold"/>
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                        Grid.Column="0"
+                        Text="Status"
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        Grid.Column="1"
+                        Text="Wird ermittelt..."
+                        x:Name="NetworkStatusText"/>
+
+                    </Grid>
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                        Grid.Column="0"
+                        Text="IP-Adresse"
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        Grid.Column="1"
+                        Text="Wird ermittelt..."
+                        x:Name="IpAddressText"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</Page>
