@@ -14,8 +14,94 @@ namespace WinAdminTool.Views
             LoadSystemInformation();
             LoadCpuInformation();
             LoadMemoryInformation();
+            LoadHardwareInformation();
+            LoadBiosInformation();
         }
 
+        private void LoadBiosInformation()
+        {
+            try
+            {
+                using RegistryKey? key =
+                    Registry.LocalMachine.OpenSubKey(
+                        @"HARDWARE\DESCRIPTION\System\BIOS");
+
+                if (key == null)
+                {
+                    BiosManufacturerText.Text = "Unbekannt";
+                    BiosVersionText.Text = "Unbekannt";
+                    BiosDateText.Text = "Unbekannt";
+                    return;
+                }
+
+                string? manufacturer =
+                    key.GetValue("BIOSVendor") as string;
+
+                string? version =
+                    key.GetValue("BIOSVersion") as string;
+
+                string? date =
+                    key.GetValue("BIOSReleaseDate") as string;
+
+                BiosManufacturerText.Text =
+                    string.IsNullOrWhiteSpace(manufacturer)
+                        ? "Unbekannt"
+                        : manufacturer.Trim();
+
+                BiosVersionText.Text =
+                    string.IsNullOrWhiteSpace(version)
+                        ? "Unbekannt"
+                        : version.Trim();
+
+                BiosDateText.Text =
+                    string.IsNullOrWhiteSpace(date)
+                        ? "Unbekannt"
+                        : date.Trim();
+            }
+            catch
+            {
+                BiosManufacturerText.Text = "Unbekannt";
+                BiosVersionText.Text = "Unbekannt";
+                BiosDateText.Text = "Unbekannt";
+            }
+        }
+        private void LoadHardwareInformation()
+        {
+            try
+            {
+                using RegistryKey? key =
+                    Registry.LocalMachine.OpenSubKey(
+                        @"HARDWARE\DESCRIPTION\System\BIOS");
+
+                if (key == null)
+                {
+                    SystemManufacturerText.Text = "Unbekannt";
+                    SystemModelText.Text = "Unbekannt";
+                    return;
+                }
+
+                string? manufacturer =
+                    key.GetValue("SystemManufacturer") as string;
+
+                string? model =
+                    key.GetValue("SystemProductName") as string;
+
+                SystemManufacturerText.Text =
+                    string.IsNullOrWhiteSpace(manufacturer)
+                        ? "Unbekannt"
+                        : manufacturer.Trim();
+
+                SystemModelText.Text =
+                    string.IsNullOrWhiteSpace(model)
+                        ? "Unbekannt"
+                        : model.Trim();
+            }
+            catch
+            {
+                SystemManufacturerText.Text = "Unbekannt";
+                SystemModelText.Text = "Unbekannt";
+            }
+        }
         private void LoadMemoryInformation()
         {
             MEMORYSTATUSEX memoryStatus = new MEMORYSTATUSEX();

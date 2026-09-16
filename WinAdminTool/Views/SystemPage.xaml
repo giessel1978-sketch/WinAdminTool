@@ -129,6 +129,120 @@
 
             </Border>
 
+            <!-- System -->
+
+            <Border
+    Padding="20"
+    CornerRadius="8"
+    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock
+            Text="System"
+            FontSize="20"
+            FontWeight="SemiBold"/>
+
+                    <Grid
+            ColumnSpacing="24"
+            RowSpacing="10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                Grid.Row="0"
+                Text="Hersteller"/>
+
+                        <TextBlock
+                Grid.Row="0"
+                Grid.Column="1"
+                x:Name="SystemManufacturerText"/>
+
+                        <TextBlock
+                Grid.Row="1"
+                Text="Modell"/>
+
+                        <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                x:Name="SystemModelText"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- BIOS / Firmware -->
+
+            <Border
+    Padding="20"
+    CornerRadius="8"
+    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock
+            Text="BIOS / Firmware"
+            FontSize="20"
+            FontWeight="SemiBold"/>
+
+                    <Grid
+            ColumnSpacing="24"
+            RowSpacing="10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                Grid.Row="0"
+                Text="Hersteller"/>
+
+                        <TextBlock
+                Grid.Row="0"
+                Grid.Column="1"
+                x:Name="BiosManufacturerText"/>
+
+                        <TextBlock
+                Grid.Row="1"
+                Text="Version"/>
+
+                        <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                x:Name="BiosVersionText"/>
+
+                        <TextBlock
+                Grid.Row="2"
+                Text="Datum"/>
+
+                        <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                x:Name="BiosDateText"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+            
             <!-- Prozessor -->
 
             <Border
