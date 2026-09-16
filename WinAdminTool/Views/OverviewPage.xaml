@@ -128,6 +128,37 @@
                         Value="0"
                         Height="8"/>
 
+                        <TextBlock
+    Text="Prozessor"
+    Opacity="0.7"
+    Margin="0,8,0,0"/>
+
+                        <TextBlock
+    Text="Wird ermittelt..."
+    x:Name="CpuNameText"
+    FontSize="16"
+    TextWrapping="Wrap"/>
+
+                        <TextBlock
+    Text="Kerne"
+    Opacity="0.7"
+    Margin="0,4,0,0"/>
+
+                        <TextBlock
+    Text="Wird ermittelt..."
+    x:Name="CpuCoresText"
+    FontSize="16"/>
+
+                        <TextBlock
+    Text="Logische Prozessoren"
+    Opacity="0.7"
+    Margin="0,4,0,0"/>
+
+                        <TextBlock
+    Text="Wird ermittelt..."
+    x:Name="CpuLogicalProcessorsText"
+    FontSize="16"/>
+
                     </StackPanel>
 
                 </Border>
