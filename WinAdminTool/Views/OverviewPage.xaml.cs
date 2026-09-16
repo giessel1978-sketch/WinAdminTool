@@ -54,7 +54,7 @@ namespace WinAdminTool.Views
                 CpuNameText.Text = GetProcessorName();
 
                 CpuCoresText.Text =
-                    Environment.ProcessorCount.ToString();
+                    GetPhysicalCoreCount().ToString();
 
                 CpuLogicalProcessorsText.Text =
                     Environment.ProcessorCount.ToString();
@@ -88,6 +88,69 @@ namespace WinAdminTool.Views
             }
 
             return "Unbekannt";
+        }
+
+        private int GetPhysicalCoreCount()
+        {
+            uint length = 0;
+
+            GetLogicalProcessorInformationEx(
+                LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore,
+                IntPtr.Zero,
+                ref length);
+
+            if (length == 0)
+            {
+                return Environment.ProcessorCount;
+            }
+
+            IntPtr buffer = Marshal.AllocHGlobal((int)length);
+
+            try
+            {
+                if (!GetLogicalProcessorInformationEx(
+                        LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore,
+                        buffer,
+                        ref length))
+                {
+                    return Environment.ProcessorCount;
+                }
+
+                int physicalCoreCount = 0;
+                int offset = 0;
+
+                while (offset < length)
+                {
+                    IntPtr current =
+                        IntPtr.Add(buffer, offset);
+
+                    SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX info =
+                        Marshal.PtrToStructure<
+                            SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX>(
+                                current);
+
+                    if (info.Relationship ==
+                        LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore)
+                    {
+                        physicalCoreCount++;
+                    }
+
+                    if (info.Size == 0)
+                    {
+                        break;
+                    }
+
+                    offset += (int)info.Size;
+                }
+
+                return physicalCoreCount > 0
+                    ? physicalCoreCount
+                    : Environment.ProcessorCount;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
         }
 
         private void StartCpuMonitoring()
@@ -188,6 +251,31 @@ namespace WinAdminTool.Views
         {
             public uint dwLowDateTime;
             public uint dwHighDateTime;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GetLogicalProcessorInformationEx(
+            LOGICAL_PROCESSOR_RELATIONSHIP RelationshipType,
+            IntPtr Buffer,
+            ref uint ReturnedLength);
+
+        private enum LOGICAL_PROCESSOR_RELATIONSHIP
+        {
+            RelationProcessorCore = 0,
+            RelationNumaNode = 1,
+            RelationCache = 2,
+            RelationProcessorPackage = 3,
+            RelationGroup = 4,
+            RelationProcessorDie = 5,
+            RelationNumaNodeEx = 6,
+            RelationProcessorModule = 7
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX
+        {
+            public LOGICAL_PROCESSOR_RELATIONSHIP Relationship;
+            public uint Size;
         }
 
         private string GetWindowsEdition()
