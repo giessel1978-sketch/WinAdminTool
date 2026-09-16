@@ -33,6 +33,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Services")
+        {
+            ContentFrame.Content = new Views.ServicesPage();
+            return;
+        }
+
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
         ContentFrame.Content = new TextBlock
