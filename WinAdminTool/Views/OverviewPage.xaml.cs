@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,8 +25,92 @@ namespace WinAdminTool.Views
 
             StartCpuMonitoring();
             StartMemoryMonitoring();
+            StartStorageMonitoring();
         }
 
+        private void StartStorageMonitoring()
+        {
+            _ = MonitorStorageUsageAsync();
+        }
+
+        private async Task MonitorStorageUsageAsync()
+        {
+            while (_monitoringCancellationTokenSource != null &&
+                   !_monitoringCancellationTokenSource.IsCancellationRequested)
+            {
+                UpdateStorageInformation();
+
+                try
+                {
+                    await Task.Delay(
+                        2000,
+                        _monitoringCancellationTokenSource.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void UpdateStorageInformation()
+        {
+            try
+            {
+                string systemDrive =
+                    Path.GetPathRoot(
+                        Environment.GetFolderPath(
+                            Environment.SpecialFolder.System))
+                    ?? "C:\\";
+
+                DriveInfo drive = new DriveInfo(systemDrive);
+
+                if (!drive.IsReady)
+                {
+                    StorageUsageText.Text = "Nicht verfügbar";
+                    StorageProgressBar.Value = 0;
+                    return;
+                }
+
+                long totalSpace = drive.TotalSize;
+                long freeSpace = drive.AvailableFreeSpace;
+                long usedSpace = totalSpace - freeSpace;
+
+                double usage =
+                    totalSpace > 0
+                        ? (double)usedSpace / totalSpace * 100.0
+                        : 0;
+
+                StorageUsageText.Text =
+                    $"{FormatStorageSize(usedSpace)} / " +
+                    $"{FormatStorageSize(totalSpace)} " +
+                    $"({usage:0} %)";
+
+                StorageProgressBar.Value =
+                    Math.Clamp(usage, 0, 100);
+            }
+            catch
+            {
+                StorageUsageText.Text = "Unbekannt";
+                StorageProgressBar.Value = 0;
+            }
+        }
+
+        private static string FormatStorageSize(long bytes)
+        {
+            const double terabyte =
+                1024.0 * 1024.0 * 1024.0 * 1024.0;
+
+            const double gigabyte =
+                1024.0 * 1024.0 * 1024.0;
+
+            if (bytes >= terabyte)
+            {
+                return $"{bytes / terabyte:0.0} TB";
+            }
+
+            return $"{bytes / gigabyte:0.0} GB";
+        }
         private void LoadSystemInformation()
         {
             ComputerNameText.Text = Environment.MachineName;
