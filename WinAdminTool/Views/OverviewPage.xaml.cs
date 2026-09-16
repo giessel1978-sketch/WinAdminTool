@@ -21,7 +21,9 @@ namespace WinAdminTool.Views
 
             LoadSystemInformation();
             LoadCpuInformation();
+
             StartCpuMonitoring();
+            StartMemoryMonitoring();
         }
 
         private void LoadSystemInformation()
@@ -240,6 +242,82 @@ namespace WinAdminTool.Views
                    | fileTime.dwLowDateTime;
         }
 
+        private void StartMemoryMonitoring()
+        {
+            _ = MonitorMemoryUsageAsync();
+        }
+
+        private async Task MonitorMemoryUsageAsync()
+        {
+            while (_monitoringCancellationTokenSource != null &&
+                   !_monitoringCancellationTokenSource
+                       .IsCancellationRequested)
+            {
+                UpdateMemoryInformation();
+
+                try
+                {
+                    await Task.Delay(
+                        1000,
+                        _monitoringCancellationTokenSource.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void UpdateMemoryInformation()
+        {
+            MEMORYSTATUSEX memoryStatus = new MEMORYSTATUSEX();
+
+            if (!GlobalMemoryStatusEx(ref memoryStatus))
+            {
+                MemoryUsageText.Text = "Unbekannt";
+                MemoryProgressBar.Value = 0;
+                return;
+            }
+
+            ulong totalMemory =
+                memoryStatus.ullTotalPhys;
+
+            ulong availableMemory =
+                memoryStatus.ullAvailPhys;
+
+            ulong usedMemory =
+                totalMemory - availableMemory;
+
+            double usage =
+                totalMemory > 0
+                    ? (double)usedMemory / totalMemory * 100.0
+                    : 0;
+
+            MemoryUsageText.Text =
+                $"{FormatMemorySize(usedMemory)} / " +
+                $"{FormatMemorySize(totalMemory)} " +
+                $"({usage:0} %)";
+
+            MemoryProgressBar.Value =
+                Math.Clamp(usage, 0, 100);
+        }
+
+        private static string FormatMemorySize(ulong bytes)
+        {
+            const double gigabyte =
+                1024.0 * 1024.0 * 1024.0;
+
+            const double megabyte =
+                1024.0 * 1024.0;
+
+            if (bytes >= gigabyte)
+            {
+                return $"{bytes / gigabyte:0.0} GB";
+            }
+
+            return $"{bytes / megabyte:0} MB";
+        }
+
         [DllImport("kernel32.dll")]
         private static extern bool GetSystemTimes(
             out FILETIME lpIdleTime,
@@ -276,6 +354,29 @@ namespace WinAdminTool.Views
         {
             public LOGICAL_PROCESSOR_RELATIONSHIP Relationship;
             public uint Size;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GlobalMemoryStatusEx(
+            ref MEMORYSTATUSEX lpBuffer);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MEMORYSTATUSEX
+        {
+            public uint dwLength;
+            public uint dwMemoryLoad;
+            public ulong ullTotalPhys;
+            public ulong ullAvailPhys;
+            public ulong ullTotalPageFile;
+            public ulong ullAvailPageFile;
+            public ulong ullTotalVirtual;
+            public ulong ullAvailVirtual;
+            public ulong ullAvailExtendedVirtual;
+
+            public MEMORYSTATUSEX()
+            {
+                dwLength = (uint)Marshal.SizeOf<MEMORYSTATUSEX>();
+            }
         }
 
         private string GetWindowsEdition()
