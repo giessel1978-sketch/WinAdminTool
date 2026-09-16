@@ -53,14 +53,44 @@
                         FontSize="16"/>
 
                         <TextBlock
-                        Text="Windows"
-                        Opacity="0.7"
-                        Margin="0,8,0,0"/>
+    Text="Windows"
+    Opacity="0.7"
+    Margin="0,8,0,0"/>
 
                         <TextBlock
-                        Text="Wird ermittelt..."
-                        x:Name="WindowsVersionText"
-                        FontSize="16"/>
+    Text="Wird ermittelt..."
+    x:Name="WindowsEditionText"
+    FontSize="16"/>
+
+                        <TextBlock
+    Text="Version"
+    Opacity="0.7"
+    Margin="0,8,0,0"/>
+
+                        <TextBlock
+    Text="Wird ermittelt..."
+    x:Name="WindowsVersionText"
+    FontSize="16"/>
+
+                        <TextBlock
+    Text="Build"
+    Opacity="0.7"
+    Margin="0,8,0,0"/>
+
+                        <TextBlock
+    Text="Wird ermittelt..."
+    x:Name="WindowsBuildText"
+    FontSize="16"/>
+
+                        <TextBlock
+    Text="Architektur"
+    Opacity="0.7"
+    Margin="0,8,0,0"/>
+
+                        <TextBlock
+    Text="Wird ermittelt..."
+    x:Name="WindowsArchitectureText"
+    FontSize="16"/>
 
                     </StackPanel>
 
