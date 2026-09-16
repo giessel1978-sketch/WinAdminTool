@@ -2,6 +2,8 @@
 using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,8 +28,100 @@ namespace WinAdminTool.Views
             StartCpuMonitoring();
             StartMemoryMonitoring();
             StartStorageMonitoring();
+            StartNetworkMonitoring();
         }
 
+        private void StartNetworkMonitoring()
+        {
+            _ = MonitorNetworkInformationAsync();
+        }
+
+        private async Task MonitorNetworkInformationAsync()
+        {
+            while (_monitoringCancellationTokenSource != null &&
+                   !_monitoringCancellationTokenSource.IsCancellationRequested)
+            {
+                UpdateNetworkInformation();
+
+                try
+                {
+                    await Task.Delay(
+                        2000,
+                        _monitoringCancellationTokenSource.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void UpdateNetworkInformation()
+        {
+            try
+            {
+                NetworkInterface[] interfaces =
+                    NetworkInterface.GetAllNetworkInterfaces();
+
+                NetworkInterface? activeInterface = null;
+
+                foreach (NetworkInterface networkInterface in interfaces)
+                {
+                    if (networkInterface.OperationalStatus !=
+                        OperationalStatus.Up)
+                    {
+                        continue;
+                    }
+
+                    if (networkInterface.NetworkInterfaceType ==
+                        NetworkInterfaceType.Loopback)
+                    {
+                        continue;
+                    }
+
+                    if (networkInterface.NetworkInterfaceType ==
+                        NetworkInterfaceType.Tunnel)
+                    {
+                        continue;
+                    }
+
+                    activeInterface = networkInterface;
+                    break;
+                }
+
+                if (activeInterface == null)
+                {
+                    NetworkStatusText.Text = "Nicht verbunden";
+                    IpAddressText.Text = "Keine IP-Adresse";
+                    return;
+                }
+
+                IPInterfaceProperties properties =
+                    activeInterface.GetIPProperties();
+
+                string? ipv4Address = null;
+
+                foreach (UnicastIPAddressInformation address
+                         in properties.UnicastAddresses)
+                {
+                    if (address.Address.AddressFamily ==
+                        AddressFamily.InterNetwork)
+                    {
+                        ipv4Address = address.Address.ToString();
+                        break;
+                    }
+                }
+
+                NetworkStatusText.Text = "Verbunden";
+                IpAddressText.Text =
+                    ipv4Address ?? "Keine IPv4-Adresse";
+            }
+            catch
+            {
+                NetworkStatusText.Text = "Unbekannt";
+                IpAddressText.Text = "Unbekannt";
+            }
+        }
         private void StartStorageMonitoring()
         {
             _ = MonitorStorageUsageAsync();
