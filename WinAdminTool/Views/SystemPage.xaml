@@ -1,0 +1,219 @@
+<Page
+    x:Class="WinAdminTool.Views.SystemPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer>
+        <StackPanel
+            Padding="24"
+            Spacing="16">
+
+            <!-- Kopfbereich -->
+
+            <StackPanel Spacing="4">
+                <TextBlock
+                    Text="System"
+                    FontSize="28"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="Detaillierte Informationen über das System"
+                    Opacity="0.7"/>
+            </StackPanel>
+
+            <!-- Betriebssystem -->
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock
+                        Text="Betriebssystem"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                    <Grid
+                        ColumnSpacing="24"
+                        RowSpacing="10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Text="Edition"/>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            x:Name="WindowsEditionText"/>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Text="Version"/>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            x:Name="WindowsVersionText"/>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Text="Build"/>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            x:Name="WindowsBuildText"/>
+
+                        <TextBlock
+                            Grid.Row="3"
+                            Text="Architektur"/>
+
+                        <TextBlock
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            x:Name="WindowsArchitectureText"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- Computer -->
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock
+                        Text="Computer"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                    <Grid
+                        ColumnSpacing="24"
+                        RowSpacing="10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Text="Computername"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="ComputerNameText"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- Prozessor -->
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock
+                        Text="Prozessor"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                    <Grid
+                        ColumnSpacing="24"
+                        RowSpacing="10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Text="Prozessor"/>
+
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            x:Name="CpuNameText"/>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Text="Physische Kerne"/>
+
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            x:Name="CpuCoresText"/>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Text="Logische Prozessoren"/>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            x:Name="CpuLogicalProcessorsText"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+            <!-- Arbeitsspeicher -->
+
+            <Border
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="12">
+
+                    <TextBlock
+                        Text="Arbeitsspeicher"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                    <TextBlock
+                        x:Name="MemoryInformationText"
+                        Text="Wird ermittelt ..."/>
+
+                </StackPanel>
+
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</Page>

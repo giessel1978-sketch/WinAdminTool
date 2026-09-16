@@ -27,6 +27,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "System")
+        {
+            ContentFrame.Content = new Views.SystemPage();
+            return;
+        }
+
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
         ContentFrame.Content = new TextBlock
@@ -38,5 +44,4 @@ public sealed partial class MainWindow : Window
             VerticalAlignment = VerticalAlignment.Center
         };
     }
-
 }
