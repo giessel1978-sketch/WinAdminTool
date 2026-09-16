@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace WinAdminTool.Views
@@ -16,6 +17,88 @@ namespace WinAdminTool.Views
             LoadMemoryInformation();
             LoadHardwareInformation();
             LoadBiosInformation();
+            LoadUptimeInformation();
+            LoadMainboardInformation();
+        }
+
+        private void LoadUptimeInformation()
+        {
+            try
+            {
+                DateTime lastBootTime = GetLastBootTime();
+
+                TimeSpan uptime = DateTime.Now - lastBootTime;
+
+                if (uptime.TotalSeconds < 0)
+                {
+                    LastBootTimeText.Text = "Unbekannt";
+                    SystemUptimeText.Text = "Unbekannt";
+                    return;
+                }
+
+                LastBootTimeText.Text =
+                    lastBootTime.ToString("dd.MM.yyyy, HH:mm:ss");
+
+                int days = (int)uptime.TotalDays;
+
+                if (days > 0)
+                {
+                    SystemUptimeText.Text =
+                        $"{days} Tage, " +
+                        $"{uptime.Hours} Stunden, " +
+                        $"{uptime.Minutes} Minuten";
+                }
+                else
+                {
+                    SystemUptimeText.Text =
+                        $"{uptime.Hours} Stunden, " +
+                        $"{uptime.Minutes} Minuten";
+                }
+            }
+            catch
+            {
+                LastBootTimeText.Text = "Unbekannt";
+                SystemUptimeText.Text = "Unbekannt";
+            }
+        }
+
+        private DateTime GetLastBootTime()
+        {
+            using Process process = new Process();
+
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = "powershell.exe",
+                Arguments =
+                    "-NoProfile -Command " +
+                    "\"(Get-CimInstance Win32_OperatingSystem).LastBootUpTime.ToString('o')\"",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+
+            process.Start();
+
+            string output =
+                process.StandardOutput.ReadToEnd().Trim();
+
+            process.WaitForExit();
+
+            if (string.IsNullOrWhiteSpace(output))
+            {
+                throw new InvalidOperationException(
+                    "Die letzte Systemstartzeit konnte nicht ermittelt werden.");
+            }
+
+            if (!DateTime.TryParse(
+                    output,
+                    out DateTime lastBootTime))
+            {
+                throw new InvalidOperationException(
+                    "Die Systemstartzeit konnte nicht verarbeitet werden.");
+            }
+
+            return lastBootTime;
         }
 
         private void LoadBiosInformation()
@@ -65,6 +148,7 @@ namespace WinAdminTool.Views
                 BiosDateText.Text = "Unbekannt";
             }
         }
+
         private void LoadHardwareInformation()
         {
             try
@@ -102,6 +186,55 @@ namespace WinAdminTool.Views
                 SystemModelText.Text = "Unbekannt";
             }
         }
+
+        private void LoadMainboardInformation()
+        {
+            try
+            {
+                using RegistryKey? key =
+                    Registry.LocalMachine.OpenSubKey(
+                        @"HARDWARE\DESCRIPTION\System\BIOS");
+
+                if (key == null)
+                {
+                    MainboardManufacturerText.Text = "Unbekannt";
+                    MainboardModelText.Text = "Unbekannt";
+                    MainboardVersionText.Text = "Unbekannt";
+                    return;
+                }
+
+                string? manufacturer =
+                    key.GetValue("BaseBoardManufacturer") as string;
+
+                string? model =
+                    key.GetValue("BaseBoardProduct") as string;
+
+                string? version =
+                    key.GetValue("BaseBoardVersion") as string;
+
+                MainboardManufacturerText.Text =
+                    string.IsNullOrWhiteSpace(manufacturer)
+                        ? "Unbekannt"
+                        : manufacturer.Trim();
+
+                MainboardModelText.Text =
+                    string.IsNullOrWhiteSpace(model)
+                        ? "Unbekannt"
+                        : model.Trim();
+
+                MainboardVersionText.Text =
+                    string.IsNullOrWhiteSpace(version)
+                        ? "Unbekannt"
+                        : version.Trim();
+            }
+            catch
+            {
+                MainboardManufacturerText.Text = "Unbekannt";
+                MainboardModelText.Text = "Unbekannt";
+                MainboardVersionText.Text = "Unbekannt";
+            }
+        }
+
         private void LoadMemoryInformation()
         {
             MEMORYSTATUSEX memoryStatus = new MEMORYSTATUSEX();
@@ -124,14 +257,18 @@ namespace WinAdminTool.Views
 
             return $"{bytes / gigabyte:0.0} GB";
         }
+
         private void LoadSystemInformation()
         {
             ComputerNameText.Text = Environment.MachineName;
 
             if (OperatingSystem.IsWindows())
             {
-                WindowsVersionText.Text = GetWindowsDisplayVersion();
-                WindowsBuildText.Text = GetWindowsBuild();
+                WindowsVersionText.Text =
+                    GetWindowsDisplayVersion();
+
+                WindowsBuildText.Text =
+                    GetWindowsBuild();
 
                 WindowsArchitectureText.Text =
                     RuntimeInformation.OSArchitecture.ToString();
@@ -152,7 +289,8 @@ namespace WinAdminTool.Views
         {
             try
             {
-                CpuNameText.Text = GetProcessorName();
+                CpuNameText.Text =
+                    GetProcessorName();
 
                 CpuCoresText.Text =
                     GetPhysicalCoreCount().ToString();
@@ -382,9 +520,11 @@ namespace WinAdminTool.Views
             IntPtr Buffer,
             ref uint ReturnedLength);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport(
+            "kernel32.dll",
+            SetLastError = true)]
         private static extern bool GlobalMemoryStatusEx(
-    ref MEMORYSTATUSEX lpBuffer);
+            ref MEMORYSTATUSEX lpBuffer);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct MEMORYSTATUSEX
@@ -405,6 +545,7 @@ namespace WinAdminTool.Views
                     (uint)Marshal.SizeOf<MEMORYSTATUSEX>();
             }
         }
+
         private enum LOGICAL_PROCESSOR_RELATIONSHIP
         {
             RelationProcessorCore = 0,

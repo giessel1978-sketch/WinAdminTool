@@ -242,6 +242,87 @@
                 </StackPanel>
 
             </Border>
+
+            <Border
+    Padding="20"
+    CornerRadius="8"
+    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="8">
+                    <TextBlock
+            Text="Systemlaufzeit"
+            FontSize="20"
+            FontWeight="SemiBold" />
+
+                    <TextBlock
+            Text="Letzter Systemstart"
+            FontSize="14"
+            Opacity="0.7" />
+
+                    <TextBlock
+            x:Name="LastBootTimeText"
+            Text="Unbekannt"
+            FontSize="16" />
+
+                    <TextBlock
+            Text="Laufzeit"
+            FontSize="14"
+            Opacity="0.7"
+            Margin="0,8,0,0" />
+
+                    <TextBlock
+            x:Name="SystemUptimeText"
+            Text="Unbekannt"
+            FontSize="16" />
+                </StackPanel>
+
+            </Border>
+
+            <Border
+    Padding="20"
+    CornerRadius="8"
+    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <StackPanel Spacing="8">
+                    <TextBlock
+            Text="Mainboard"
+            FontSize="20"
+            FontWeight="SemiBold" />
+
+                    <TextBlock
+            Text="Hersteller"
+            FontSize="14"
+            Opacity="0.7" />
+
+                    <TextBlock
+            x:Name="MainboardManufacturerText"
+            Text="Unbekannt"
+            FontSize="16" />
+
+                    <TextBlock
+            Text="Modell"
+            FontSize="14"
+            Opacity="0.7"
+            Margin="0,8,0,0" />
+
+                    <TextBlock
+            x:Name="MainboardModelText"
+            Text="Unbekannt"
+            FontSize="16" />
+
+                    <TextBlock
+            Text="Version"
+            FontSize="14"
+            Opacity="0.7"
+            Margin="0,8,0,0" />
+
+                    <TextBlock
+            x:Name="MainboardVersionText"
+            Text="Unbekannt"
+            FontSize="16" />
+                </StackPanel>
+
+            </Border>
             
             <!-- Prozessor -->
 
