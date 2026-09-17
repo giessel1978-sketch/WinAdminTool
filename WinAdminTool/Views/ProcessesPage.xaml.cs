@@ -71,8 +71,7 @@ namespace WinAdminTool.Views
                 // Die aktuell ausgewählte PID wird nicht mehr aus
                 // einer View ausgelesen, sondern aus unserem zentralen
                 // Auswahlzustand übernommen.
-                int selectedProcessId =
-                    _selectedProcessId;
+                
 
                 List<ProcessInfo> newProcesses =
                     await Task.Run(() =>
@@ -122,22 +121,25 @@ namespace WinAdminTool.Views
 
                 if (_treeViewActive)
                 {
-                    // Baum neu aufbauen und die aktuelle Auswahl
-                    // wiederherstellen.
-                    BuildProcessTree(selectedProcessId);
+                    // Wichtig:
+                    // Während der CPU-Messung kann der Benutzer einen
+                    // anderen Prozess ausgewählt haben. Deshalb hier NICHT
+                    // mehr die am Anfang gespeicherte PID verwenden,
+                    // sondern den aktuell gültigen Auswahlzustand.
+                    BuildProcessTree(_selectedProcessId);
                 }
 
-                // Ausgewählten Prozess nach einer Aktualisierung
+                // Den aktuell ausgewählten Prozess nach der Aktualisierung
                 // erneut in der Detailansicht anzeigen.
                 ProcessInfo? selectedProcess =
                     _processes.FirstOrDefault(
-                        p => p.Id == selectedProcessId);
+                        p => p.Id == _selectedProcessId);
 
                 if (selectedProcess != null)
                 {
                     await ShowProcessDetailsAsync(selectedProcess);
                 }
-                else if (selectedProcessId > 0)
+                else if (_selectedProcessId > 0)
                 {
                     // Der ausgewählte Prozess existiert nicht mehr.
                     _selectedProcessId = 0;

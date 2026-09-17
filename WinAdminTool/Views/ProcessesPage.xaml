@@ -252,56 +252,75 @@
 
                     <!-- Prozessbaum -->
                     <TreeView
-                    x:Name="ProcessTreeView"
-                    Grid.Row="1"
-                    SelectionMode="Single"
-                    SelectionChanged="ProcessTreeView_SelectionChanged">
+x:Name="ProcessTreeView"
+Grid.Row="1"
+SelectionMode="Single"
+SelectionChanged="ProcessTreeView_SelectionChanged">
+
+                        <TreeView.Resources>
+
+                            <Style TargetType="TreeViewItem">
+
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+
+                                <Setter Property="Margin" Value="2,1"/>
+
+                                <Setter Property="Padding" Value="0"/>
+
+                            </Style>
+
+                        </TreeView.Resources>
 
                         <TreeView.ItemTemplate>
 
                             <DataTemplate>
 
-                                <Grid
-                                Padding="8,7"
-                                MinHeight="36">
+                                <Border
+    Padding="8,6"
+    CornerRadius="6"
+    MinHeight="36">
 
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="150"/>
-                                    </Grid.ColumnDefinitions>
+                                    <Grid>
 
-                                    <!-- Prozessname -->
-                                    <TextBlock
-                                    Grid.Column="0"
-                                    Text="{Binding Content.Name}"
-                                    VerticalAlignment="Center"
-                                    FontWeight="SemiBold"
-                                    TextTrimming="CharacterEllipsis"/>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="120"/>
+                                            <ColumnDefinition Width="150"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <!-- PID -->
-                                    <TextBlock
-                                    Grid.Column="1"
-                                    Text="{Binding Content.Id}"
-                                    VerticalAlignment="Center"
-                                    Opacity="0.65"/>
+                                        <!-- Prozessname -->
+                                        <TextBlock
+            Grid.Column="0"
+            Text="{Binding Content.Name}"
+            VerticalAlignment="Center"
+            FontWeight="SemiBold"
+            TextTrimming="CharacterEllipsis"/>
 
-                                    <!-- CPU -->
-                                    <TextBlock
-                                    Grid.Column="2"
-                                    Text="{Binding Content.CpuDisplay}"
-                                    VerticalAlignment="Center"
-                                    Opacity="0.75"/>
+                                        <!-- PID -->
+                                        <TextBlock
+            Grid.Column="1"
+            Text="{Binding Content.Id}"
+            VerticalAlignment="Center"
+            Opacity="0.65"/>
 
-                                    <!-- Arbeitsspeicher -->
-                                    <TextBlock
-                                    Grid.Column="3"
-                                    Text="{Binding Content.MemoryDisplay}"
-                                    VerticalAlignment="Center"
-                                    Opacity="0.75"/>
+                                        <!-- CPU -->
+                                        <TextBlock
+            Grid.Column="2"
+            Text="{Binding Content.CpuDisplay}"
+            VerticalAlignment="Center"
+            Opacity="0.75"/>
 
-                                </Grid>
+                                        <!-- Arbeitsspeicher -->
+                                        <TextBlock
+            Grid.Column="3"
+            Text="{Binding Content.MemoryDisplay}"
+            VerticalAlignment="Center"
+            Opacity="0.75"/>
+
+                                    </Grid>
+
+                                </Border>
 
                             </DataTemplate>
 
