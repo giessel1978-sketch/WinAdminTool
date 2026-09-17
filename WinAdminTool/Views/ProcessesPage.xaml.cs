@@ -24,6 +24,11 @@ namespace WinAdminTool.Views
 
         private bool _isRefreshing;
 
+        private bool _treeViewActive;
+
+        // Zentrale Speicherung des aktuell ausgewählten Prozesses.
+        private int _selectedProcessId;
+
         public ProcessesPage()
         {
             InitializeComponent();
@@ -39,6 +44,8 @@ namespace WinAdminTool.Views
             _refreshTimer.Tick += RefreshTimer_Tick;
 
             ClearProcessDetails();
+
+            SetViewMode(false);
 
             _ = LoadProcessesAsync();
 
@@ -61,6 +68,12 @@ namespace WinAdminTool.Views
 
             try
             {
+                // Die aktuell ausgewählte PID wird nicht mehr aus
+                // einer View ausgelesen, sondern aus unserem zentralen
+                // Auswahlzustand übernommen.
+                int selectedProcessId =
+                    _selectedProcessId;
+
                 List<ProcessInfo> newProcesses =
                     await Task.Run(() =>
                     {
@@ -70,10 +83,17 @@ namespace WinAdminTool.Views
                         {
                             try
                             {
+                                int parentProcessId =
+                                    GetParentProcessId(process);
+
                                 result.Add(new ProcessInfo
                                 {
                                     Name = process.ProcessName,
                                     Id = process.Id,
+
+                                    ParentProcessId =
+                                        parentProcessId,
+
                                     MemoryUsage =
                                         process.WorkingSet64 /
                                         1024.0 /
@@ -100,11 +120,29 @@ namespace WinAdminTool.Views
 
                 await UpdateCpuUsageAsync();
 
+                if (_treeViewActive)
+                {
+                    // Baum neu aufbauen und die aktuelle Auswahl
+                    // wiederherstellen.
+                    BuildProcessTree(selectedProcessId);
+                }
+
                 // Ausgewählten Prozess nach einer Aktualisierung
                 // erneut in der Detailansicht anzeigen.
-                if (ProcessListView.SelectedItem is ProcessInfo selectedProcess)
+                ProcessInfo? selectedProcess =
+                    _processes.FirstOrDefault(
+                        p => p.Id == selectedProcessId);
+
+                if (selectedProcess != null)
                 {
                     await ShowProcessDetailsAsync(selectedProcess);
+                }
+                else if (selectedProcessId > 0)
+                {
+                    // Der ausgewählte Prozess existiert nicht mehr.
+                    _selectedProcessId = 0;
+
+                    ClearProcessDetails();
                 }
             }
             finally
@@ -126,7 +164,11 @@ namespace WinAdminTool.Views
                     existingProcess.Id,
                     out ProcessInfo? newProcess))
                 {
-                    existingProcess.Name = newProcess.Name;
+                    existingProcess.Name =
+                        newProcess.Name;
+
+                    existingProcess.ParentProcessId =
+                        newProcess.ParentProcessId;
 
                     existingProcess.MemoryUsage =
                         newProcess.MemoryUsage;
@@ -138,12 +180,20 @@ namespace WinAdminTool.Views
 
                     _displayedProcesses.Remove(existingProcess);
 
-                    // Falls der gerade ausgewählte Prozess
-                    // beendet wurde, Details zurücksetzen.
-                    if (ProcessListView.SelectedItem == existingProcess)
+                    // Falls gerade der ausgewählte Prozess beendet wurde,
+                    // Auswahl und Details zurücksetzen.
+                    if (_selectedProcessId ==
+                        existingProcess.Id)
+                    {
+                        _selectedProcessId = 0;
+
+                        ClearProcessDetails();
+                    }
+
+                    if (ProcessListView.SelectedItem ==
+                        existingProcess)
                     {
                         ProcessListView.SelectedItem = null;
-                        ClearProcessDetails();
                     }
                 }
             }
@@ -268,7 +318,307 @@ namespace WinAdminTool.Views
                     _displayedProcesses.Add(process);
                 }
             }
+
+            if (_treeViewActive)
+            {
+                BuildProcessTree(
+                    _selectedProcessId);
+            }
         }
+
+        // ============================================================
+        // Ansicht umschalten
+        // ============================================================
+
+        private void ListViewButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            SetViewMode(false);
+        }
+
+        private void TreeViewButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            SetViewMode(true);
+        }
+
+        private void SetViewMode(bool treeView)
+        {
+            if (_treeViewActive == treeView)
+                return;
+
+            _treeViewActive = treeView;
+
+            if (treeView)
+            {
+                ProcessListContainer.Visibility =
+                    Visibility.Collapsed;
+
+                ProcessTreeContainer.Visibility =
+                    Visibility.Visible;
+
+                // Baum mit der zentral gespeicherten Auswahl aufbauen.
+                BuildProcessTree(
+                    _selectedProcessId);
+            }
+            else
+            {
+                ProcessListContainer.Visibility =
+                    Visibility.Visible;
+
+                ProcessTreeContainer.Visibility =
+                    Visibility.Collapsed;
+
+                // Beim Wechsel zurück zur Liste den gleichen Prozess
+                // wieder auswählen.
+                if (_selectedProcessId > 0)
+                {
+                    ProcessInfo? process =
+                        _processes.FirstOrDefault(
+                            p => p.Id == _selectedProcessId);
+
+                    if (process != null &&
+                        MatchesSearch(process))
+                    {
+                        ProcessListView.SelectedItem =
+                            process;
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        // Prozessbaum
+        // ============================================================
+
+        private void BuildProcessTree(
+            int selectedProcessId = 0)
+        {
+            // Bereits aufgeklappte Prozesse merken.
+            HashSet<int> expandedProcessIds =
+                GetExpandedProcessIds(
+                    ProcessTreeView.RootNodes);
+
+            ProcessTreeView.RootNodes.Clear();
+
+            List<ProcessInfo> processes =
+                _processes
+                    .Where(MatchesSearch)
+                    .OrderBy(p => p.Name)
+                    .ThenBy(p => p.Id)
+                    .ToList();
+
+            if (processes.Count == 0)
+                return;
+
+            Dictionary<int, TreeViewNode> nodes =
+                new();
+
+            foreach (ProcessInfo process in processes)
+            {
+                TreeViewNode node =
+                    new TreeViewNode
+                    {
+                        Content = process
+                    };
+
+                nodes[process.Id] = node;
+            }
+
+            HashSet<int> processIds =
+                processes
+                    .Select(p => p.Id)
+                    .ToHashSet();
+
+            foreach (ProcessInfo process in processes)
+            {
+                TreeViewNode node =
+                    nodes[process.Id];
+
+                int parentId =
+                    process.ParentProcessId;
+
+                // Kein gültiger Parent:
+                // Prozess wird als Root dargestellt.
+                if (parentId == 0 ||
+                    parentId == process.Id ||
+                    !processIds.Contains(parentId))
+                {
+                    ProcessTreeView.RootNodes.Add(node);
+                    continue;
+                }
+
+                if (nodes.TryGetValue(
+                    parentId,
+                    out TreeViewNode? parentNode))
+                {
+                    parentNode.Children.Add(node);
+                }
+                else
+                {
+                    ProcessTreeView.RootNodes.Add(node);
+                }
+            }
+
+            // Zuvor aufgeklappte Prozesse wieder öffnen.
+            RestoreExpandedNodes(
+                ProcessTreeView.RootNodes,
+                expandedProcessIds);
+
+            // Bei einer Suche werden die passenden Pfade automatisch geöffnet.
+            if (!string.IsNullOrWhiteSpace(
+                ProcessSearchBox.Text))
+            {
+                ExpandNodesForSearch(
+                    ProcessTreeView.RootNodes);
+            }
+
+            // Zuvor ausgewählten Prozess wieder auswählen.
+            if (selectedProcessId > 0)
+            {
+                SelectTreeNode(
+                    ProcessTreeView.RootNodes,
+                    selectedProcessId);
+            }
+        }
+
+        private HashSet<int> GetExpandedProcessIds(
+            IList<TreeViewNode> nodes)
+        {
+            HashSet<int> expandedProcessIds = new();
+
+            foreach (TreeViewNode node in nodes)
+            {
+                if (node.Content is ProcessInfo process)
+                {
+                    if (node.IsExpanded)
+                    {
+                        expandedProcessIds.Add(
+                            process.Id);
+                    }
+                }
+
+                HashSet<int> childIds =
+                    GetExpandedProcessIds(
+                        node.Children);
+
+                expandedProcessIds.UnionWith(
+                    childIds);
+            }
+
+            return expandedProcessIds;
+        }
+
+        private void RestoreExpandedNodes(
+            IList<TreeViewNode> nodes,
+            HashSet<int> expandedProcessIds)
+        {
+            foreach (TreeViewNode node in nodes)
+            {
+                if (node.Content is ProcessInfo process &&
+                    expandedProcessIds.Contains(process.Id))
+                {
+                    node.IsExpanded = true;
+                }
+
+                RestoreExpandedNodes(
+                    node.Children,
+                    expandedProcessIds);
+            }
+        }
+
+        private void ExpandNodesForSearch(
+            IList<TreeViewNode> nodes)
+        {
+            foreach (TreeViewNode node in nodes)
+            {
+                if (node.Content is not ProcessInfo process)
+                    continue;
+
+                bool hasMatchingChild =
+                    HasMatchingDescendant(node);
+
+                if (MatchesSearch(process) ||
+                    hasMatchingChild)
+                {
+                    node.IsExpanded = true;
+                }
+
+                ExpandNodesForSearch(
+                    node.Children);
+            }
+        }
+
+        private bool HasMatchingDescendant(
+            TreeViewNode node)
+        {
+            foreach (TreeViewNode child in node.Children)
+            {
+                if (child.Content is ProcessInfo process &&
+                    MatchesSearch(process))
+                {
+                    return true;
+                }
+
+                if (HasMatchingDescendant(child))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool SelectTreeNode(
+            IList<TreeViewNode> nodes,
+            int processId)
+        {
+            foreach (TreeViewNode node in nodes)
+            {
+                if (node.Content is ProcessInfo process &&
+                    process.Id == processId)
+                {
+                    ProcessTreeView.SelectedNodes.Clear();
+                    ProcessTreeView.SelectedNodes.Add(node);
+
+                    return true;
+                }
+
+                if (SelectTreeNode(
+                    node.Children,
+                    processId))
+                {
+                    node.IsExpanded = true;
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private async void ProcessTreeView_SelectionChanged(
+            TreeView sender,
+            TreeViewSelectionChangedEventArgs args)
+        {
+            if (args.AddedItems.Count == 0)
+                return;
+
+            if (args.AddedItems[0] is TreeViewNode node &&
+                node.Content is ProcessInfo processInfo)
+            {
+                // Neue Auswahl zentral speichern.
+                _selectedProcessId =
+                    processInfo.Id;
+
+                await ShowProcessDetailsAsync(
+                    processInfo);
+            }
+        }
+
+        // ============================================================
+        // Prozessauswahl / Details
+        // ============================================================
 
         private async void ProcessListView_SelectionChanged(
             object sender,
@@ -276,11 +626,25 @@ namespace WinAdminTool.Views
         {
             if (ProcessListView.SelectedItem is ProcessInfo processInfo)
             {
-                await ShowProcessDetailsAsync(processInfo);
+                // Neue Auswahl zentral speichern.
+                _selectedProcessId =
+                    processInfo.Id;
+
+                await ShowProcessDetailsAsync(
+                    processInfo);
             }
             else
             {
-                ClearProcessDetails();
+                // Nur löschen, wenn die Listenansicht tatsächlich
+                // aktiv ist. Beim Umschalten kann die ListView ihre
+                // Auswahl verlieren, obwohl der Prozess im Baum
+                // weiterhin ausgewählt ist.
+                if (!_treeViewActive)
+                {
+                    _selectedProcessId = 0;
+
+                    ClearProcessDetails();
+                }
             }
         }
 
@@ -343,6 +707,10 @@ namespace WinAdminTool.Views
             }
         }
 
+        // ============================================================
+        // Prozessdetails
+        // ============================================================
+
         private ProcessDetails ReadProcessDetails(int processId)
         {
             ProcessDetails details = new();
@@ -403,7 +771,6 @@ namespace WinAdminTool.Views
                         "Zugriff verweigert";
                 }
 
-                // Benutzerkonto des Prozesses ermitteln.
                 details.User =
                     GetProcessUser(process);
             }
@@ -478,7 +845,6 @@ namespace WinAdminTool.Views
 
                         SID_NAME_USE sidType;
 
-                        // Benötigte Puffergrößen ermitteln.
                         LookupAccountSid(
                             null,
                             tokenUser.User.Sid,
@@ -544,11 +910,18 @@ namespace WinAdminTool.Views
             }
         }
 
+        // ============================================================
+        // Prozess beenden
+        // ============================================================
+
         private async void TerminateProcessButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            if (ProcessListView.SelectedItem is not ProcessInfo processInfo)
+            ProcessInfo? processInfo =
+                GetSelectedProcess();
+
+            if (processInfo == null)
                 return;
 
             ContentDialog dialog = new ContentDialog
@@ -584,7 +957,7 @@ namespace WinAdminTool.Views
                     }
                 });
 
-                ProcessListView.SelectedItem = null;
+                _selectedProcessId = 0;
 
                 ClearProcessDetails();
 
@@ -618,11 +991,29 @@ namespace WinAdminTool.Views
             }
         }
 
+        private ProcessInfo? GetSelectedProcess()
+        {
+            if (_selectedProcessId > 0)
+            {
+                return _processes.FirstOrDefault(
+                    p => p.Id == _selectedProcessId);
+            }
+
+            return null;
+        }
+
+        // ============================================================
+        // Speicherort öffnen
+        // ============================================================
+
         private async void OpenExecutableLocationButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            if (ProcessListView.SelectedItem is not ProcessInfo processInfo)
+            ProcessInfo? processInfo =
+                GetSelectedProcess();
+
+            if (processInfo == null)
                 return;
 
             try
@@ -678,6 +1069,10 @@ namespace WinAdminTool.Views
             }
         }
 
+        // ============================================================
+        // Meldungen / Details zurücksetzen
+        // ============================================================
+
         private async Task ShowMessageAsync(
             string title,
             string message)
@@ -723,12 +1118,47 @@ namespace WinAdminTool.Views
         }
 
         // ============================================================
+        // Parent-Prozess ermitteln
+        // ============================================================
+
+        private int GetParentProcessId(Process process)
+        {
+            try
+            {
+                PROCESS_BASIC_INFORMATION basicInformation =
+                    new PROCESS_BASIC_INFORMATION();
+
+                int returnLength = 0;
+
+                int status =
+                    NtQueryInformationProcess(
+                        process.Handle,
+                        ProcessBasicInformation,
+                        ref basicInformation,
+                        Marshal.SizeOf<PROCESS_BASIC_INFORMATION>(),
+                        ref returnLength);
+
+                if (status != 0)
+                    return 0;
+
+                return basicInformation.InheritedFromUniqueProcessId
+                    .ToInt32();
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        // ============================================================
         // Windows API
         // ============================================================
 
         private const uint TOKEN_QUERY = 0x0008;
 
         private const int TokenUserInformationClass = 1;
+
+        private const int ProcessBasicInformation = 0;
 
         private enum SID_NAME_USE
         {
@@ -754,6 +1184,22 @@ namespace WinAdminTool.Views
         {
             public IntPtr Sid;
             public uint Attributes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESS_BASIC_INFORMATION
+        {
+            public IntPtr Reserved1;
+
+            public IntPtr PebBaseAddress;
+
+            public IntPtr Reserved2_0;
+
+            public IntPtr Reserved2_1;
+
+            public IntPtr UniqueProcessId;
+
+            public IntPtr InheritedFromUniqueProcessId;
         }
 
         [DllImport(
@@ -792,6 +1238,16 @@ namespace WinAdminTool.Views
             SetLastError = true)]
         private static extern bool CloseHandle(
             IntPtr hObject);
+
+        [DllImport(
+            "ntdll.dll",
+            SetLastError = true)]
+        private static extern int NtQueryInformationProcess(
+            IntPtr ProcessHandle,
+            int ProcessInformationClass,
+            ref PROCESS_BASIC_INFORMATION ProcessInformation,
+            int ProcessInformationLength,
+            ref int ReturnLength);
     }
 
     public class ProcessDetails
@@ -812,19 +1268,26 @@ namespace WinAdminTool.Views
     public class ProcessInfo : INotifyPropertyChanged
     {
         private string _name = string.Empty;
+
         private int _id;
+
+        private int _parentProcessId;
+
         private double _cpuUsage;
+
         private double _memoryUsage;
 
         public string Name
         {
             get => _name;
+
             set
             {
                 if (_name == value)
                     return;
 
                 _name = value;
+
                 OnPropertyChanged();
             }
         }
@@ -832,12 +1295,29 @@ namespace WinAdminTool.Views
         public int Id
         {
             get => _id;
+
             set
             {
                 if (_id == value)
                     return;
 
                 _id = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int ParentProcessId
+        {
+            get => _parentProcessId;
+
+            set
+            {
+                if (_parentProcessId == value)
+                    return;
+
+                _parentProcessId = value;
+
                 OnPropertyChanged();
             }
         }
@@ -845,6 +1325,7 @@ namespace WinAdminTool.Views
         public double CpuUsage
         {
             get => _cpuUsage;
+
             set
             {
                 if (Math.Abs(_cpuUsage - value) < 0.01)
@@ -860,6 +1341,7 @@ namespace WinAdminTool.Views
         public double MemoryUsage
         {
             get => _memoryUsage;
+
             set
             {
                 if (Math.Abs(_memoryUsage - value) < 0.01)
