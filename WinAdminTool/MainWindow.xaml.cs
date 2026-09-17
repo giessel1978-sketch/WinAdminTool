@@ -39,6 +39,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Processes")
+        {
+            ContentFrame.Content = new Views.ProcessesPage();
+            return;
+        }
+
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
         ContentFrame.Content = new TextBlock
