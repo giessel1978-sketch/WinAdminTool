@@ -29,6 +29,8 @@ namespace WinAdminTool.Views
         // Zentrale Speicherung des aktuell ausgewählten Prozesses.
         private int _selectedProcessId;
 
+        private TreeViewItem? _highlightedTreeViewItem;
+
         public ProcessesPage()
         {
             InitializeComponent();
@@ -403,6 +405,14 @@ namespace WinAdminTool.Views
                 GetExpandedProcessIds(
                     ProcessTreeView.RootNodes);
 
+            if (_highlightedTreeViewItem != null)
+            {
+                _highlightedTreeViewItem.ClearValue(
+                    Control.BackgroundProperty);
+
+                _highlightedTreeViewItem = null;
+            }
+
             ProcessTreeView.RootNodes.Clear();
 
             List<ProcessInfo> processes =
@@ -600,18 +610,41 @@ namespace WinAdminTool.Views
         }
 
         private async void ProcessTreeView_SelectionChanged(
-            TreeView sender,
-            TreeViewSelectionChangedEventArgs args)
+    TreeView sender,
+    TreeViewSelectionChangedEventArgs args)
         {
+            // Vorherige Hervorhebung entfernen.
+            if (_highlightedTreeViewItem != null)
+            {
+                _highlightedTreeViewItem.ClearValue(
+                    Control.BackgroundProperty);
+
+                _highlightedTreeViewItem = null;
+            }
+
             if (args.AddedItems.Count == 0)
                 return;
 
             if (args.AddedItems[0] is TreeViewNode node &&
                 node.Content is ProcessInfo processInfo)
             {
-                // Neue Auswahl zentral speichern.
                 _selectedProcessId =
                     processInfo.Id;
+
+                TreeViewItem? treeViewItem =
+                    ProcessTreeView.ContainerFromNode(node)
+                    as TreeViewItem;
+
+                if (treeViewItem != null)
+                {
+                    treeViewItem.Background =
+                        Application.Current.Resources[
+                            "SystemControlHighlightListAccentLowBrush"]
+                        as Microsoft.UI.Xaml.Media.Brush;
+
+                    _highlightedTreeViewItem =
+                        treeViewItem;
+                }
 
                 await ShowProcessDetailsAsync(
                     processInfo);
