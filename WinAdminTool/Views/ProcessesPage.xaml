@@ -11,7 +11,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -39,68 +38,45 @@
         </StackPanel>
 
         <!-- Suchfeld -->
-        <Grid
+        <TextBox
+            x:Name="ProcessSearchBox"
             Grid.Row="1"
-            Margin="0,20,0,16">
+            PlaceholderText="Prozess suchen..."
+            Width="320"
+            HorizontalAlignment="Left"
+            Margin="0,20,0,16"
+            TextChanged="ProcessSearchBox_TextChanged"/>
 
-            <TextBox
-                x:Name="ProcessSearchBox"
-                PlaceholderText="Prozess suchen..."
-                Width="320"
-                HorizontalAlignment="Left"
-                TextChanged="ProcessSearchBox_TextChanged"/>
+        <!-- Hauptbereich -->
+        <Grid
+            Grid.Row="2">
 
-        </Grid>
+            <Grid.ColumnDefinitions>
+                <!-- Prozessbereich -->
+                <ColumnDefinition Width="2*"/>
 
-        <!-- Tabellenkopf -->
-        <Border
-            Grid.Row="2"
-            Padding="12,8"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                <!-- Abstand -->
+                <ColumnDefinition Width="12"/>
 
-            <Grid>
+                <!-- Detailbereich -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="150"/>
-                </Grid.ColumnDefinitions>
+            <!-- Prozessbereich -->
+            <Grid Grid.Column="0">
 
-                <TextBlock
-                    Text="Prozess"
-                    FontWeight="SemiBold"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock
-                    Grid.Column="1"
-                    Text="PID"
-                    FontWeight="SemiBold"/>
+                <!-- Tabellenkopf -->
+                <Border
+                    Grid.Row="0"
+                    Padding="12,8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
 
-                <TextBlock
-                    Grid.Column="2"
-                    Text="CPU"
-                    FontWeight="SemiBold"/>
-
-                <TextBlock
-                    Grid.Column="3"
-                    Text="Arbeitsspeicher"
-                    FontWeight="SemiBold"/>
-
-            </Grid>
-
-        </Border>
-
-        <!-- Prozessliste -->
-        <ListView
-            x:Name="ProcessListView"
-            Grid.Row="3"
-            SelectionMode="Single">
-
-            <ListView.ItemTemplate>
-
-                <DataTemplate>
-
-                    <Grid Padding="12,8">
+                    <Grid>
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
@@ -110,31 +86,288 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock
-                            Text="{Binding Name}"
-                            VerticalAlignment="Center"/>
+                            Text="Prozess"
+                            FontWeight="SemiBold"/>
 
                         <TextBlock
                             Grid.Column="1"
-                            Text="{Binding Id}"
-                            VerticalAlignment="Center"/>
+                            Text="PID"
+                            FontWeight="SemiBold"/>
 
                         <TextBlock
                             Grid.Column="2"
-                            Text="{Binding CpuDisplay}"
-                            VerticalAlignment="Center"/>
+                            Text="CPU"
+                            FontWeight="SemiBold"/>
 
                         <TextBlock
                             Grid.Column="3"
-                            Text="{Binding MemoryDisplay}"
-                            VerticalAlignment="Center"/>
+                            Text="Arbeitsspeicher"
+                            FontWeight="SemiBold"/>
 
                     </Grid>
 
-                </DataTemplate>
+                </Border>
 
-            </ListView.ItemTemplate>
+                <!-- Prozessliste -->
+                <ListView
+                    x:Name="ProcessListView"
+                    Grid.Row="1"
+                    SelectionMode="Single"
+                    SelectionChanged="ProcessListView_SelectionChanged">
 
-        </ListView>
+                    <ListView.ItemTemplate>
+
+                        <DataTemplate>
+
+                            <Grid Padding="12,8">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Text="{Binding Name}"
+                                    VerticalAlignment="Center"/>
+
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding Id}"
+                                    VerticalAlignment="Center"/>
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="{Binding CpuDisplay}"
+                                    VerticalAlignment="Center"/>
+
+                                <TextBlock
+                                    Grid.Column="3"
+                                    Text="{Binding MemoryDisplay}"
+                                    VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </DataTemplate>
+
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+            </Grid>
+
+            <!-- Detailbereich -->
+            <Border
+                Grid.Column="2"
+                Padding="20"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <ScrollViewer>
+
+                    <StackPanel>
+
+                        <TextBlock
+                            Text="Prozessdetails"
+                            FontSize="20"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            x:Name="DetailProcessName"
+                            Text="Kein Prozess ausgewählt"
+                            FontSize="15"
+                            Opacity="0.7"
+                            Margin="0,4,0,20"
+                            TextWrapping="Wrap"/>
+
+                        <!-- Allgemein -->
+                        <TextBlock
+                            Text="Allgemein"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Text="PID"
+                                Grid.Row="0"
+                                Opacity="0.7"/>
+
+                            <TextBlock
+                                x:Name="DetailProcessId"
+                                Text="-"
+                                Grid.Row="0"
+                                Grid.Column="1"/>
+
+                            <TextBlock
+                                Text="Status"
+                                Grid.Row="1"
+                                Opacity="0.7"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                x:Name="DetailStatus"
+                                Text="-"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                Text="CPU"
+                                Grid.Row="2"
+                                Opacity="0.7"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                x:Name="DetailCpu"
+                                Text="-"
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                Text="Arbeitsspeicher"
+                                Grid.Row="3"
+                                Opacity="0.7"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                x:Name="DetailMemory"
+                                Text="-"
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                Text="Priorität"
+                                Grid.Row="4"
+                                Opacity="0.7"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                x:Name="DetailPriority"
+                                Text="-"
+                                Grid.Row="4"
+                                Grid.Column="1"
+                                Margin="0,8,0,0"/>
+
+                        </Grid>
+
+                        <!-- Prozessinformationen -->
+                        <TextBlock
+                            Text="Prozessinformationen"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Margin="0,24,0,10"/>
+
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Text="Benutzer"
+                                Grid.Row="0"
+                                Opacity="0.7"/>
+
+                            <TextBlock
+                                x:Name="DetailUser"
+                                Text="-"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                TextWrapping="Wrap"/>
+
+                            <TextBlock
+                                Text="Startzeit"
+                                Grid.Row="1"
+                                Opacity="0.7"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                x:Name="DetailStartTime"
+                                Text="-"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                Text="Fenstertitel"
+                                Grid.Row="2"
+                                Opacity="0.7"
+                                Margin="0,8,0,0"/>
+
+                            <TextBlock
+                                x:Name="DetailWindowTitle"
+                                Text="-"
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Margin="0,8,0,0"
+                                TextWrapping="Wrap"/>
+
+                        </Grid>
+
+                        <!-- Pfad -->
+                        <TextBlock
+    Text="Ausführbare Datei"
+    FontSize="14"
+    FontWeight="SemiBold"
+    Margin="0,24,0,10"/>
+
+                        <TextBlock
+    x:Name="DetailExecutablePath"
+    Text="-"
+    TextWrapping="Wrap"
+    Opacity="0.85"/>
+
+                        <!-- Aktionen -->
+                        <StackPanel
+    Orientation="Horizontal"
+    Spacing="10"
+    Margin="0,20,0,0">
+
+                            <Button
+        x:Name="OpenExecutableLocationButton"
+        Content="Speicherort öffnen"
+        Click="OpenExecutableLocationButton_Click"
+        IsEnabled="False"/>
+
+                            <Button
+        x:Name="TerminateProcessButton"
+        Content="Prozess beenden"
+        Click="TerminateProcessButton_Click"
+        IsEnabled="False"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </Grid>
 
     </Grid>
 
