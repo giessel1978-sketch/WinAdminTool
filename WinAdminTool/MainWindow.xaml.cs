@@ -51,6 +51,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Storage")
+        {
+            ContentFrame.Content = new Views.StoragePage();
+            return;
+        }
+
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
         ContentFrame.Content = new TextBlock

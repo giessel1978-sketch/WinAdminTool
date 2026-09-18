@@ -1,0 +1,284 @@
+<Page
+    x:Class="WinAdminTool.Views.StoragePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Kopfbereich -->
+        <StackPanel Grid.Row="0">
+
+            <TextBlock
+                Text="Speicher"
+                FontSize="28"
+                FontWeight="SemiBold"/>
+
+            <TextBlock
+                Text="Datenträger und Partitionen anzeigen"
+                Margin="0,4,0,0"
+                Opacity="0.7"/>
+
+        </StackPanel>
+
+        <!-- Hauptbereich -->
+        <Grid
+            Grid.Row="1"
+            Margin="0,20,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="1.2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Linke Seite -->
+            <Border
+                Grid.Column="0"
+                BorderThickness="1"
+                CornerRadius="8">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Tabellenkopf -->
+                    <Border
+                        Grid.Row="0"
+                        Padding="12,10"
+                        BorderThickness="0,0,0,1">
+
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                Text="Datenträger / Partition"
+                                FontWeight="SemiBold"
+                                FontSize="12"/>
+
+                            <TextBlock
+                                Grid.Column="2"
+                                Text="Dateisystem"
+                                FontWeight="SemiBold"
+                                FontSize="12"/>
+
+                            <TextBlock
+                                Grid.Column="3"
+                                Text="Größe"
+                                FontWeight="SemiBold"
+                                FontSize="12"/>
+
+                            <TextBlock
+                                Grid.Column="4"
+                                Text="Belegt"
+                                FontWeight="SemiBold"
+                                FontSize="12"/>
+
+                            <TextBlock
+                                Grid.Column="5"
+                                Text="Auslastung"
+                                FontWeight="SemiBold"
+                                FontSize="12"/>
+
+                        </Grid>
+
+                    </Border>
+
+                    <!-- TreeView -->
+                    <TreeView
+                        x:Name="StorageTreeView"
+                        Grid.Row="1"
+                        SelectionMode="Single"
+                        SelectionChanged="StorageTreeView_SelectionChanged">
+
+                        
+                        <TreeView.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <Grid
+            Padding="8,6"
+            MinHeight="48">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="220"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Name -->
+                                    <StackPanel
+                Grid.Column="0"
+                VerticalAlignment="Center">
+
+                                        <TextBlock
+                    Text="{Binding Content.Name}"
+                    FontWeight="SemiBold"/>
+
+                                        <TextBlock
+                    Text="{Binding Content.Description}"
+                    FontSize="12"
+                    Opacity="0.65"
+                    TextTrimming="CharacterEllipsis"/>
+
+                                    </StackPanel>
+
+                                    <!-- Dateisystem -->
+                                    <TextBlock
+                Grid.Column="1"
+                Text="{Binding Content.FileSystem}"
+                VerticalAlignment="Center"/>
+
+                                    <!-- Größe -->
+                                    <TextBlock
+                Grid.Column="2"
+                Text="{Binding Content.TotalSpace}"
+                VerticalAlignment="Center"/>
+
+                                    <!-- Belegt -->
+                                    <TextBlock
+                Grid.Column="3"
+                Text="{Binding Content.UsedSpace}"
+                VerticalAlignment="Center"/>
+
+                                    <!-- Auslastung -->
+                                    <Grid
+                Grid.Column="4"
+                Margin="0,0,12,0"
+                VerticalAlignment="Center">
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ProgressBar
+                    Grid.Column="0"
+                    Minimum="0"
+                    Maximum="100"
+                    Value="{Binding Content.UsagePercent}"
+                    Height="8"
+                    VerticalAlignment="Center"/>
+
+                                        <TextBlock
+                    Grid.Column="1"
+                    Text="{Binding Content.UsageText}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="8,0,0,0"/>
+
+                                    </Grid>
+
+                                </Grid>
+
+                            </DataTemplate>
+
+                        </TreeView.ItemTemplate>
+                        
+
+
+                    </TreeView>
+
+                </Grid>
+
+            </Border>
+
+            <!-- Rechte Seite -->
+            <Border
+                Grid.Column="1"
+                Margin="16,0,0,0"
+                Padding="20"
+                BorderThickness="1"
+                CornerRadius="8">
+
+                <ScrollViewer>
+
+                    <StackPanel Spacing="12">
+
+                        <TextBlock
+                            Text="Speicherdetails"
+                            FontSize="20"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            x:Name="DetailPlaceholder"
+                            Text="Wählen Sie einen Datenträger oder eine Partition aus."
+                            Opacity="0.7"
+                            FontSize="13"/>
+
+                        <StackPanel
+                            x:Name="DetailPanel"
+                            Visibility="Collapsed"
+                            Spacing="10">
+
+                            <TextBlock
+                                x:Name="DetailName"
+                                FontSize="24"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                x:Name="DetailDescription"
+                                FontSize="13"
+                                Opacity="0.7"
+                                TextWrapping="Wrap"/>
+
+                            <TextBlock
+                                x:Name="DetailDevice"
+                                FontSize="13"
+                                TextWrapping="Wrap"/>
+
+                            <TextBlock
+                                x:Name="DetailFileSystem"
+                                FontSize="13"/>
+
+                            <TextBlock
+                                x:Name="DetailTotal"
+                                FontSize="13"/>
+
+                            <TextBlock
+                                x:Name="DetailUsed"
+                                FontSize="13"/>
+
+                            <TextBlock
+                                x:Name="DetailFree"
+                                FontSize="13"/>
+
+                            <TextBlock
+                                x:Name="DetailUsage"
+                                FontSize="13"/>
+
+                            <TextBlock
+                                x:Name="DetailPartitionType"
+                                FontSize="13"
+                                TextWrapping="Wrap"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </Grid>
+
+    </Grid>
+
+</Page>
