@@ -45,6 +45,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Events")
+        {
+            ContentFrame.Content = new Views.EventsPage();
+            return;
+        }
+
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
         ContentFrame.Content = new TextBlock

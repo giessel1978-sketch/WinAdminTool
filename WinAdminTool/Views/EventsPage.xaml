@@ -1,0 +1,184 @@
+<Page
+ x:Class="WinAdminTool.Views.EventsPage"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ mc:Ignorable="d">
+
+    <Grid Padding="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+
+            <TextBlock
+            Text="Ereignisse"
+            FontSize="28"
+            FontWeight="SemiBold"/>
+
+            <TextBlock
+            Text="Windows-Ereignisprotokolle anzeigen und durchsuchen"
+            Margin="0,4,0,0"
+            Opacity="0.7"/>
+
+        </StackPanel>
+
+        <Grid
+        Grid.Row="1"
+        Margin="0,20,0,12">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox
+            x:Name="LogComboBox"
+            Grid.Column="0"
+            Header="Protokoll"
+            SelectedIndex="0"
+            Margin="0,0,12,0">
+
+                <ComboBoxItem Content="System"/>
+                <ComboBoxItem Content="Application"/>
+                <ComboBoxItem Content="Security"/>
+
+            </ComboBox>
+
+            <ComboBox
+            x:Name="LevelComboBox"
+            Grid.Column="1"
+            Header="Ebene"
+            SelectedIndex="0"
+            Margin="0,0,12,0">
+
+                <ComboBoxItem Content="Alle"/>
+                <ComboBoxItem Content="Information"/>
+                <ComboBoxItem Content="Warnung"/>
+                <ComboBoxItem Content="Fehler"/>
+                <ComboBoxItem Content="Kritisch"/>
+
+            </ComboBox>
+
+            <TextBox
+            x:Name="SearchTextBox"
+            Grid.Column="2"
+            Header="Suche"
+            PlaceholderText="Quelle, Ereignis-ID oder Text..."
+            Margin="0,0,12,0"/>
+
+            <Button
+            x:Name="RefreshButton"
+            Grid.Column="3"
+            Content="Aktualisieren"
+            VerticalAlignment="Bottom"
+            Click="RefreshButton_Click"/>
+
+        </Grid>
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border
+            Grid.Column="0"
+            BorderThickness="1"
+            CornerRadius="8">
+
+                <ListView
+                x:Name="EventsListView"
+                SelectionChanged="EventsListView_SelectionChanged">
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+
+                            <Grid Padding="12,8">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="110"/>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                Grid.Column="0"
+                                Text="{Binding TimeCreated}"
+                                TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock
+                                Grid.Column="1"
+                                Text="{Binding Level}"
+                                TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock
+                                Grid.Column="2"
+                                Text="{Binding ProviderName}"
+                                TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock
+                                Grid.Column="3"
+                                Text="{Binding Id}"
+                                TextTrimming="CharacterEllipsis"/>
+
+                                <TextBlock
+                                Grid.Column="4"
+                                Text="{Binding Message}"
+                                TextTrimming="CharacterEllipsis"/>
+
+                            </Grid>
+
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+            </Border>
+
+            <Border
+            Grid.Column="1"
+            Margin="16,0,0,0"
+            Padding="20"
+            BorderThickness="1"
+            CornerRadius="8">
+
+                <ScrollViewer>
+
+                    <StackPanel Spacing="12">
+
+                        <TextBlock
+                        Text="Ereignisdetails"
+                        FontSize="20"
+                        FontWeight="SemiBold"/>
+
+                        <TextBlock
+                        x:Name="DetailPlaceholder"
+                        Text="Wählen Sie ein Ereignis aus."
+                        Opacity="0.7"/>
+
+                        <TextBlock
+                        x:Name="DetailTextBlock"
+                        TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </Grid>
+
+    </Grid>
+
+</Page>
