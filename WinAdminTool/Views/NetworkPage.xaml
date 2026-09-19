@@ -1,0 +1,312 @@
+ <Page
+    x:Class="WinAdminTool.Views.NetworkPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Kopfbereich -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+
+            <TextBlock
+                Text="Netzwerk"
+                FontSize="28"
+                FontWeight="SemiBold"/>
+
+            <TextBlock
+                Text="Netzwerkadapter und Verbindungsinformationen anzeigen"
+                Margin="0,4,0,0"
+                Opacity="0.7"/>
+
+        </StackPanel>
+
+        <!-- Hauptbereich -->
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Netzwerkadapter -->
+            <Border
+                Grid.Column="0"
+                Padding="16"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Text="Netzwerkadapter"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Margin="0,0,0,12"/>
+
+                    <ListView
+                        x:Name="AdapterList"
+                        Grid.Row="1"
+                        SelectionChanged="AdapterList_SelectionChanged">
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+
+                                <Grid Padding="8">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+
+                                        <TextBlock
+                                            Text="{Binding Name}"
+                                            FontWeight="SemiBold"/>
+
+                                        <TextBlock
+                                            Text="{Binding Description}"
+                                            Margin="0,2,0,0"
+                                            Opacity="0.7"
+                                            TextWrapping="Wrap"/>
+
+                                    </StackPanel>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding Status}"
+                                        VerticalAlignment="Center"
+                                        Margin="12,0,4,0"/>
+
+                                </Grid>
+
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+
+                    </ListView>
+
+                </Grid>
+
+            </Border>
+
+            <!-- Details -->
+            <Border
+                Grid.Column="2"
+                Padding="20"
+                CornerRadius="8"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                    <StackPanel>
+
+                        <TextBlock
+                            Text="Details"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,20"/>
+
+                        <!-- Allgemein -->
+                        <TextBlock
+                            Text="Allgemein"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailName"
+                            Text="Adapter: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailDescription"
+                            Text="Beschreibung: –"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailStatus"
+                            Text="Status: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailMacAddress"
+                            Text="MAC-Adresse: –"
+                            Margin="0,0,0,16"/>
+
+                        <!-- IPv4 -->
+                        <TextBlock
+                            Text="IPv4"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailIpAddress"
+                            Text="Adresse: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailSubnetMask"
+                            Text="Subnetzmaske: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailGateway"
+                            Text="Gateway: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailDhcp"
+                            Text="DHCP: –"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,16"/>
+
+                        <!-- IPv6 -->
+                        <TextBlock
+                            Text="IPv6"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailIpv6Address"
+                            Text="Adressen: –"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailIpv6Gateway"
+                            Text="Gateway: –"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,16"/>
+
+                        <!-- DNS -->
+                        <TextBlock
+                            Text="DNS"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailDns"
+                            Text="Server: –"
+                            TextWrapping="Wrap"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailDnsEnabled"
+                            Text="DNS-Auflösung: –"
+                            Margin="0,0,0,16"/>
+
+                        <!-- Adaptereigenschaften -->
+                        <TextBlock
+                            Text="Adaptereigenschaften"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailInterfaceType"
+                            Text="Adaptertyp: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailSpeed"
+                            Text="Geschwindigkeit: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailMtu"
+                            Text="MTU: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailMulticast"
+                            Text="Multicast: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailDynamicDns"
+                            Text="Dynamisches DNS: –"
+                            Margin="0,0,0,16"/>
+
+                        <!-- Datenverkehr -->
+                        <TextBlock
+                            Text="Datenverkehr"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailReceived"
+                            Text="Empfangen gesamt: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailSent"
+                            Text="Gesendet gesamt: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailReceiveRate"
+                            Text="Empfangsrate: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailSendRate"
+                            Text="Senderate: –"
+                            Margin="0,0,0,16"/>
+
+                        <!-- Statistik -->
+                        <TextBlock
+                            Text="Statistik"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,10"/>
+
+                        <TextBlock
+                            x:Name="DetailReceiveErrors"
+                            Text="Empfangsfehler: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailSendErrors"
+                            Text="Sendefehler: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailReceivedDiscards"
+                            Text="Verworfene Empfangspakete: –"
+                            Margin="0,0,0,8"/>
+
+                        <TextBlock
+                            x:Name="DetailSentDiscards"
+                            Text="Verworfene Sendepakete: –"
+                            Margin="0,0,0,8"/>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </Grid>
+
+    </Grid>
+
+</Page>

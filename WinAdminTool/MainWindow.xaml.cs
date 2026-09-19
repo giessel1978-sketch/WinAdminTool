@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System;
 
 namespace WinAdminTool;
 
@@ -56,6 +57,14 @@ public sealed partial class MainWindow : Window
             ContentFrame.Content = new Views.StoragePage();
             return;
         }
+
+        
+        if (tag == "Network")
+        {
+            ContentFrame.Content = new Views.NetworkPage();
+            return;
+        }
+
 
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
