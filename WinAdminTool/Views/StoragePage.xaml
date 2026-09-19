@@ -1,4 +1,4 @@
-<Page
+ <Page
     x:Class="WinAdminTool.Views.StoragePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -35,7 +35,10 @@
                 <ColumnDefinition Width="1.2*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- ====================================================== -->
             <!-- Linke Seite -->
+            <!-- ====================================================== -->
+
             <Border
                 Grid.Column="0"
                 BorderThickness="1"
@@ -106,83 +109,82 @@
                         SelectionMode="Single"
                         SelectionChanged="StorageTreeView_SelectionChanged">
 
-                        
                         <TreeView.ItemTemplate>
 
                             <DataTemplate>
 
                                 <Grid
-            Padding="8,6"
-            MinHeight="48">
+                                    Padding="8,6"
+                                    MinHeight="48">
 
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="220"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="90"/>
                                         <ColumnDefinition Width="110"/>
-                                        <ColumnDefinition Width="130"/>
-                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="110"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Name -->
                                     <StackPanel
-                Grid.Column="0"
-                VerticalAlignment="Center">
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center">
 
                                         <TextBlock
-                    Text="{Binding Content.Name}"
-                    FontWeight="SemiBold"/>
+                                            Text="{Binding Content.Name}"
+                                            FontWeight="SemiBold"/>
 
                                         <TextBlock
-                    Text="{Binding Content.Description}"
-                    FontSize="12"
-                    Opacity="0.65"
-                    TextTrimming="CharacterEllipsis"/>
+                                            Text="{Binding Content.Description}"
+                                            FontSize="12"
+                                            Opacity="0.65"
+                                            TextTrimming="CharacterEllipsis"/>
 
                                     </StackPanel>
 
                                     <!-- Dateisystem -->
                                     <TextBlock
-                Grid.Column="1"
-                Text="{Binding Content.FileSystem}"
-                VerticalAlignment="Center"/>
+                                        Grid.Column="1"
+                                        Text="{Binding Content.FileSystem}"
+                                        VerticalAlignment="Center"/>
 
                                     <!-- Größe -->
                                     <TextBlock
-                Grid.Column="2"
-                Text="{Binding Content.TotalSpace}"
-                VerticalAlignment="Center"/>
+                                        Grid.Column="2"
+                                        Text="{Binding Content.TotalSpace}"
+                                        VerticalAlignment="Center"/>
 
                                     <!-- Belegt -->
                                     <TextBlock
-                Grid.Column="3"
-                Text="{Binding Content.UsedSpace}"
-                VerticalAlignment="Center"/>
+                                        Grid.Column="3"
+                                        Text="{Binding Content.UsedSpace}"
+                                        VerticalAlignment="Center"/>
 
                                     <!-- Auslastung -->
                                     <Grid
-                Grid.Column="4"
-                Margin="0,0,12,0"
-                VerticalAlignment="Center">
+                                        Grid.Column="4"
+                                        Margin="0,0,12,0"
+                                        VerticalAlignment="Center">
 
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="45"/>
                                         </Grid.ColumnDefinitions>
 
                                         <ProgressBar
-                    Grid.Column="0"
-                    Minimum="0"
-                    Maximum="100"
-                    Value="{Binding Content.UsagePercent}"
-                    Height="8"
-                    VerticalAlignment="Center"/>
+                                            Grid.Column="0"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            Value="{Binding Content.UsagePercent}"
+                                            Height="8"
+                                            VerticalAlignment="Center"/>
 
                                         <TextBlock
-                    Grid.Column="1"
-                    Text="{Binding Content.UsageText}"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    Margin="8,0,0,0"/>
+                                            Grid.Column="1"
+                                            Text="{Binding Content.UsageText}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="4,0,0,0"/>
 
                                     </Grid>
 
@@ -191,8 +193,6 @@
                             </DataTemplate>
 
                         </TreeView.ItemTemplate>
-                        
-
 
                     </TreeView>
 
@@ -200,7 +200,10 @@
 
             </Border>
 
+            <!-- ====================================================== -->
             <!-- Rechte Seite -->
+            <!-- ====================================================== -->
+
             <Border
                 Grid.Column="1"
                 Margin="16,0,0,0"
@@ -212,62 +215,160 @@
 
                     <StackPanel Spacing="12">
 
+                        <!-- Überschrift -->
                         <TextBlock
                             Text="Speicherdetails"
                             FontSize="20"
                             FontWeight="SemiBold"/>
 
+                        <!-- Keine Auswahl -->
                         <TextBlock
                             x:Name="DetailPlaceholder"
                             Text="Wählen Sie einen Datenträger oder eine Partition aus."
                             Opacity="0.7"
-                            FontSize="13"/>
+                            FontSize="13"
+                            TextWrapping="Wrap"/>
+
+                        <!-- ================================================== -->
+                        <!-- Detailbereich -->
+                        <!-- ================================================== -->
 
                         <StackPanel
                             x:Name="DetailPanel"
                             Visibility="Collapsed"
                             Spacing="10">
 
+                            <!-- Name -->
                             <TextBlock
                                 x:Name="DetailName"
                                 FontSize="24"
-                                FontWeight="SemiBold"/>
+                                FontWeight="SemiBold"
+                                TextWrapping="Wrap"/>
 
+                            <!-- Beschreibung -->
                             <TextBlock
                                 x:Name="DetailDescription"
                                 FontSize="13"
                                 Opacity="0.7"
                                 TextWrapping="Wrap"/>
 
-                            <TextBlock
-                                x:Name="DetailDevice"
-                                FontSize="13"
-                                TextWrapping="Wrap"/>
+                            <!-- ================================================== -->
+                            <!-- Allgemeine Informationen -->
+                            <!-- ================================================== -->
 
-                            <TextBlock
-                                x:Name="DetailFileSystem"
-                                FontSize="13"/>
+                            <Border
+                                Margin="0,8,0,0"
+                                Padding="12"
+                                BorderThickness="1"
+                                CornerRadius="6">
 
-                            <TextBlock
-                                x:Name="DetailTotal"
-                                FontSize="13"/>
+                                <StackPanel Spacing="8">
 
-                            <TextBlock
-                                x:Name="DetailUsed"
-                                FontSize="13"/>
+                                    <TextBlock
+                                        Text="Allgemein"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"/>
 
-                            <TextBlock
-                                x:Name="DetailFree"
-                                FontSize="13"/>
+                                    <TextBlock
+                                        x:Name="DetailDevice"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
 
-                            <TextBlock
-                                x:Name="DetailUsage"
-                                FontSize="13"/>
+                                    <TextBlock
+                                        x:Name="DetailVolume"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
 
-                            <TextBlock
-                                x:Name="DetailPartitionType"
-                                FontSize="13"
-                                TextWrapping="Wrap"/>
+                                    <TextBlock
+                                        x:Name="DetailFileSystem"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
+
+                                </StackPanel>
+
+                            </Border>
+
+                            <!-- ================================================== -->
+                            <!-- Speicherinformationen -->
+                            <!-- ================================================== -->
+
+                            <Border
+                                Padding="12"
+                                BorderThickness="1"
+                                CornerRadius="6">
+
+                                <StackPanel Spacing="8">
+
+                                    <TextBlock
+                                        Text="Speicher"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"/>
+
+                                    <TextBlock
+                                        x:Name="DetailTotal"
+                                        FontSize="13"/>
+
+                                    <TextBlock
+                                        x:Name="DetailUsed"
+                                        FontSize="13"/>
+
+                                    <TextBlock
+                                        x:Name="DetailFree"
+                                        FontSize="13"/>
+
+                                    <TextBlock
+                                        x:Name="DetailUsage"
+                                        FontSize="13"/>
+
+                                </StackPanel>
+
+                            </Border>
+
+                            <!-- ================================================== -->
+                            <!-- Hardware / Partitionsinformationen -->
+                            <!-- ================================================== -->
+
+                            <Border
+                                Padding="12"
+                                BorderThickness="1"
+                                CornerRadius="6">
+
+                                <StackPanel Spacing="8">
+
+                                    <TextBlock
+                                        x:Name="DetailHardwareTitle"
+                                        Text="Weitere Informationen"
+                                        FontSize="14"
+                                        FontWeight="SemiBold"/>
+
+                                    <TextBlock
+                                        x:Name="DetailInterface"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
+
+                                    <TextBlock
+                                        x:Name="DetailMediaType"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
+
+                                    <TextBlock
+                                        x:Name="DetailPartitionType"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
+
+                                    <TextBlock
+                                        x:Name="DetailPrimaryPartition"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
+
+                                    <TextBlock
+                                        x:Name="DetailBootPartition"
+                                        FontSize="13"
+                                        TextWrapping="Wrap"/>
+
+                                </StackPanel>
+
+                            </Border>
 
                         </StackPanel>
 

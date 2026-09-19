@@ -3,467 +3,644 @@ using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Management;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
-using System.Runtime.ConstrainedExecution;
 
-namespace WinAdminTool.Views;
-
-public sealed partial class StoragePage : Page
+namespace WinAdminTool.Views
 {
-    private readonly Dictionary<string, TreeViewNode> _disks = new();
-
-    public StoragePage()
+    public sealed partial class StoragePage : Page
     {
-        InitializeComponent();
+        private readonly List<StorageItem> _storageItems = new();
+        private readonly Dictionary<string, VolumeInfo> _volumes = new();
 
-        try
+        public StoragePage()
         {
+            InitializeComponent();
             LoadStorage();
         }
-        catch (Exception ex)
+
+        private void LoadStorage()
         {
-            System.Diagnostics.Debug.WriteLine(
-                "StoragePage Fehler: " + ex);
-        }
-    }
-
-    private void LoadStorage()
-    {
-        StorageTreeView.RootNodes.Clear();
-        _disks.Clear();
-
-        var diskNodes = new Dictionary<string, TreeViewNode>();
-
-        // ---------------------------------------------------------
-        // Physische Datenträger
-        // ---------------------------------------------------------
-
-        using (var searcher = new ManagementObjectSearcher(
-            "SELECT Index, Model, Size, InterfaceType FROM Win32_DiskDrive"))
-        {
-            foreach (ManagementObject disk in searcher.Get())
+            try
             {
-                string index =
-                    disk["Index"]?.ToString() ?? "";
-
-                string model =
-                    disk["Model"]?.ToString()
-                    ?? "Unbekannter Datenträger";
-
-                string size =
-                    FormatBytes(disk["Size"]);
-
-                string interfaceType =
-                    disk["InterfaceType"]?.ToString() ?? "-";
-
-                var item = new StorageItem
-                {
-                    Name = $"Datenträger {index}",
-                    Description = model,
-                    Device = $"Datenträger {index}",
-                    FileSystem = "-",
-                    TotalSpace = size,
-                    UsedSpace = "-",
-                    FreeSpace = "-",
-                    UsageText = "-",
-                    UsagePercent = 0,
-                    PartitionType = "-",
-                    InterfaceType = interfaceType
-                };
-
-                var node = new TreeViewNode
-                {
-                    Content = item
-                };
-
-                StorageTreeView.RootNodes.Add(node);
-
-                diskNodes[index] = node;
-                _disks[index] = node;
+                LoadVolumes();
+                LoadDisksAndPartitions();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Fehler beim Laden der Speicherinformationen: {ex}");
             }
         }
 
-        // ---------------------------------------------------------
-        // Partitionen
-        // ---------------------------------------------------------
+        // ============================================================
+        // Volumes / Laufwerke
+        // ============================================================
 
-        using (var searcher = new ManagementObjectSearcher(
-            "SELECT DiskIndex, Index, Name, Size, Type, BootPartition " +
-            "FROM Win32_DiskPartition"))
+        private void LoadVolumes()
         {
-            foreach (ManagementObject partition in searcher.Get())
+            _volumes.Clear();
+
+            using var searcher = new ManagementObjectSearcher(
+                "SELECT DeviceID, VolumeName, FileSystem, Size, FreeSpace " +
+                "FROM Win32_LogicalDisk " +
+                "WHERE DriveType = 3");
+
+            using var results = searcher.Get();
+
+            foreach (ManagementObject volume in results)
             {
-                string diskIndex =
-                    partition["DiskIndex"]?.ToString() ?? "";
+                string deviceId =
+                    volume["DeviceID"]?.ToString() ?? string.Empty;
 
-                if (!diskNodes.TryGetValue(
-                        diskIndex,
-                        out TreeViewNode? diskNode))
-                {
-                    continue;
-                }
-
-                string partitionIndex =
-                    partition["Index"]?.ToString() ?? "";
-
-                string deviceName =
-                    partition["Name"]?.ToString() ?? "";
-
-                string partitionSize =
-                    FormatBytes(partition["Size"]);
-
-                string partitionType =
-                    partition["Type"]?.ToString() ?? "-";
-
-                bool bootPartition =
-                    partition["BootPartition"] is bool value && value;
-
-                var item = new StorageItem
-                {
-                    Name = $"Partition {partitionIndex}",
-                    Description = partitionType,
-                    Device = deviceName,
-                    FileSystem = "-",
-                    TotalSpace = partitionSize,
-                    UsedSpace = "-",
-                    FreeSpace = "-",
-                    UsageText = "-",
-                    UsagePercent = 0,
-                    PartitionType = partitionType,
-                    BootPartition = bootPartition
-                };
-
-                // Versuchen, ein vorhandenes Volume
-                // dieser Partition zuzuordnen.
-                TryAddVolumeInformation(
-                    item,
-                    deviceName);
-
-                var partitionNode = new TreeViewNode
-                {
-                    Content = item
-                };
-
-                diskNode.Children.Add(partitionNode);
-            }
-        }
-    }
-
-    // -------------------------------------------------------------
-    // Volumeinformationen zur Partition ermitteln
-    // -------------------------------------------------------------
-
-    private void TryAddVolumeInformation(
-        StorageItem item,
-        string partitionDeviceName)
-    {
-        if (string.IsNullOrWhiteSpace(partitionDeviceName))
-            return;
-
-        try
-        {
-            using var volumeSearcher =
-                new ManagementObjectSearcher(
-                    "SELECT DeviceID, VolumeName, FileSystem, Size, FreeSpace " +
-                    "FROM Win32_LogicalDisk");
-
-            foreach (ManagementObject volume
-                     in volumeSearcher.Get())
-            {
-                string driveLetter =
-                    volume["DeviceID"]?.ToString() ?? "";
-
-                if (string.IsNullOrWhiteSpace(driveLetter))
+                if (string.IsNullOrWhiteSpace(deviceId))
                     continue;
 
-                if (!IsVolumeOnPartition(
-                        driveLetter,
-                        partitionDeviceName))
-                {
-                    continue;
-                }
+                long.TryParse(
+                    volume["Size"]?.ToString(),
+                    out long size);
+
+                long.TryParse(
+                    volume["FreeSpace"]?.ToString(),
+                    out long freeSpace);
 
                 string volumeName =
-                    volume["VolumeName"]?.ToString() ?? "";
+                    volume["VolumeName"]?.ToString() ?? string.Empty;
 
                 string fileSystem =
-                    volume["FileSystem"]?.ToString() ?? "-";
+                    volume["FileSystem"]?.ToString() ?? string.Empty;
 
-                ulong totalBytes =
-                    ToUInt64(volume["Size"]);
-
-                ulong freeBytes =
-                    ToUInt64(volume["FreeSpace"]);
-
-                ulong usedBytes =
-                    totalBytes > freeBytes
-                        ? totalBytes - freeBytes
-                        : 0;
-
-                double usagePercent = 0;
-
-                if (totalBytes > 0)
+                _volumes[deviceId] = new VolumeInfo
                 {
-                    usagePercent =
-                        usedBytes * 100.0 / totalBytes;
-                }
-
-                item.DriveLetter =
-                    driveLetter;
-
-                item.VolumeName =
-                    string.IsNullOrWhiteSpace(volumeName)
-                        ? "-"
-                        : volumeName;
-
-                item.FileSystem =
-                    string.IsNullOrWhiteSpace(fileSystem)
-                        ? "-"
-                        : fileSystem;
-
-                item.TotalSpace =
-                    FormatBytes(totalBytes);
-
-                item.UsedSpace =
-                    FormatBytes(usedBytes);
-
-                item.FreeSpace =
-                    FormatBytes(freeBytes);
-
-                item.UsagePercent =
-                    usagePercent;
-
-                item.UsageText =
-                    $"{usagePercent:0}%";
-
-                // Name in der Baumansicht
-                if (!string.IsNullOrWhiteSpace(volumeName))
-                {
-                    item.Name =
-                        $"{driveLetter} {volumeName}";
-                }
-                else
-                {
-                    item.Name =
-                        driveLetter;
-                }
-
-                return;
+                    DeviceId = deviceId,
+                    VolumeName = volumeName,
+                    FileSystem = fileSystem,
+                    TotalBytes = size,
+                    FreeBytes = freeSpace
+                };
             }
         }
-        catch (Exception ex)
+
+        // ============================================================
+        // Datenträger laden
+        // ============================================================
+
+        private void LoadDisksAndPartitions()
         {
-            System.Diagnostics.Debug.WriteLine(
-                "Volumezuordnung Fehler: " + ex);
+            _storageItems.Clear();
+
+            using var diskSearcher = new ManagementObjectSearcher(
+                "SELECT Index, Model, DeviceID, Size, InterfaceType, MediaType " +
+                "FROM Win32_DiskDrive");
+
+            using var diskResults = diskSearcher.Get();
+
+            foreach (ManagementObject disk in diskResults)
+            {
+                int.TryParse(
+                    disk["Index"]?.ToString(),
+                    out int diskIndex);
+
+                long.TryParse(
+                    disk["Size"]?.ToString(),
+                    out long diskSize);
+
+                string model =
+                    disk["Model"]?.ToString() ??
+                    "Unbekannter Datenträger";
+
+                string deviceId =
+                    disk["DeviceID"]?.ToString() ??
+                    string.Empty;
+
+                string interfaceType =
+                    disk["InterfaceType"]?.ToString() ??
+                    string.Empty;
+
+                string mediaType =
+                    disk["MediaType"]?.ToString() ??
+                    string.Empty;
+
+                var diskItem = new StorageItem
+                {
+                    Type = StorageItemType.Disk,
+                    Name = $"Datenträger {diskIndex}",
+                    Description = model,
+                    Device = deviceId,
+                    TotalBytes = diskSize,
+                    DiskIndex = diskIndex,
+                    InterfaceType = interfaceType,
+                    MediaType = mediaType
+                };
+
+                LoadPartitionsForDisk(
+                    diskItem,
+                    diskIndex);
+
+                _storageItems.Add(diskItem);
+            }
+
+            StorageTreeView.RootNodes.Clear();
+
+            foreach (StorageItem disk in _storageItems)
+            {
+                var diskNode = new TreeViewNode
+                {
+                    Content = disk
+                };
+
+                foreach (StorageItem partition in disk.Children)
+                {
+                    diskNode.Children.Add(
+                        new TreeViewNode
+                        {
+                            Content = partition
+                        });
+                }
+
+                StorageTreeView.RootNodes.Add(diskNode);
+            }
         }
-    }
 
-    // -------------------------------------------------------------
-    // Prüft, ob ein Volume zu einer Partition gehört
-    // -------------------------------------------------------------
+        // ============================================================
+        // Partitionen laden
+        // ============================================================
 
-    private bool IsVolumeOnPartition(
-        string driveLetter,
-        string partitionDeviceName)
-    {
-        try
+        private void LoadPartitionsForDisk(
+            StorageItem diskItem,
+            int diskIndex)
         {
-            using var associationSearcher =
-                new ManagementObjectSearcher(
+            using var partitionSearcher = new ManagementObjectSearcher(
+                $"SELECT DeviceID, Name, Description, Index, Size, " +
+                $"Type, BootPartition, PrimaryPartition, DiskIndex " +
+                $"FROM Win32_DiskPartition " +
+                $"WHERE DiskIndex = {diskIndex}");
+
+            using var partitionResults = partitionSearcher.Get();
+
+            foreach (ManagementObject partition in partitionResults)
+            {
+                int.TryParse(
+                    partition["Index"]?.ToString(),
+                    out int partitionIndex);
+
+                long.TryParse(
+                    partition["Size"]?.ToString(),
+                    out long partitionSize);
+
+                string partitionDeviceId =
+                    partition["DeviceID"]?.ToString() ??
+                    string.Empty;
+
+                string description =
+                    partition["Description"]?.ToString() ??
+                    "Partition";
+
+                string type =
+                    partition["Type"]?.ToString() ??
+                    string.Empty;
+
+                bool.TryParse(
+                    partition["BootPartition"]?.ToString(),
+                    out bool bootPartition);
+
+                bool.TryParse(
+                    partition["PrimaryPartition"]?.ToString(),
+                    out bool primaryPartition);
+
+                var partitionItem = new StorageItem
+                {
+                    Type = StorageItemType.Partition,
+                    Name = $"Partition {partitionIndex}",
+                    Description = description,
+                    Device = partitionDeviceId,
+                    TotalBytes = partitionSize,
+                    DiskIndex = diskIndex,
+                    PartitionIndex = partitionIndex,
+                    PartitionType = type,
+                    BootPartition = bootPartition,
+                    PrimaryPartition = primaryPartition
+                };
+
+                ApplyVolumeInformation(partitionItem);
+
+                diskItem.Children.Add(partitionItem);
+            }
+        }
+
+        // ============================================================
+        // Volume einer Partition zuordnen
+        // ============================================================
+
+        private void ApplyVolumeInformation(StorageItem partition)
+        {
+            if (string.IsNullOrWhiteSpace(partition.Device))
+                return;
+
+            try
+            {
+                using var searcher = new ManagementObjectSearcher(
                     "SELECT Antecedent, Dependent " +
                     "FROM Win32_LogicalDiskToPartition");
 
-            foreach (ManagementObject association
-                     in associationSearcher.Get())
+                using var results = searcher.Get();
+
+                foreach (ManagementObject association in results)
+                {
+                    string antecedent =
+                        association["Antecedent"]?.ToString() ??
+                        string.Empty;
+
+                    string dependent =
+                        association["Dependent"]?.ToString() ??
+                        string.Empty;
+
+                    string associatedPartition =
+                        ExtractDeviceId(antecedent);
+
+                    string associatedVolume =
+                        ExtractDeviceId(dependent);
+
+                    if (!string.Equals(
+                            associatedPartition,
+                            partition.Device,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(associatedVolume))
+                        continue;
+
+                    if (!_volumes.TryGetValue(
+                            associatedVolume,
+                            out VolumeInfo? volume))
+                    {
+                        continue;
+                    }
+
+                    partition.VolumeDeviceId =
+                        volume.DeviceId;
+
+                    partition.VolumeName =
+                        volume.VolumeName;
+
+                    partition.FileSystem =
+                        volume.FileSystem;
+
+                    partition.FreeBytes =
+                        volume.FreeBytes;
+
+                    break;
+                }
+            }
+            catch (Exception ex)
             {
-                string antecedent =
-                    association["Antecedent"]?.ToString() ?? "";
-
-                string dependent =
-                    association["Dependent"]?.ToString() ?? "";
-
-                if (!antecedent.Contains(
-                        partitionDeviceName,
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                if (!dependent.Contains(
-                        $"DeviceID=\"{driveLetter}\"",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                return true;
+                Debug.WriteLine(
+                    $"Fehler bei Volume-Zuordnung für " +
+                    $"{partition.Device}: {ex}");
             }
         }
-        catch (Exception ex)
+
+        // ============================================================
+        // DeviceID aus WMI-Objektpfad
+        // ============================================================
+
+        private static string ExtractDeviceId(string value)
         {
-            System.Diagnostics.Debug.WriteLine(
-                "Partitionszuordnung Fehler: " + ex);
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            const string marker = "DeviceID=";
+
+            int markerIndex = value.IndexOf(
+                marker,
+                StringComparison.OrdinalIgnoreCase);
+
+            if (markerIndex < 0)
+                return string.Empty;
+
+            int firstQuote = value.IndexOf(
+                '"',
+                markerIndex + marker.Length);
+
+            if (firstQuote < 0)
+                return string.Empty;
+
+            int secondQuote = value.IndexOf(
+                '"',
+                firstQuote + 1);
+
+            if (secondQuote < 0)
+                return string.Empty;
+
+            return value.Substring(
+                firstQuote + 1,
+                secondQuote - firstQuote - 1);
         }
 
-        return false;
-    }
+        // ============================================================
+        // Auswahl
+        // ============================================================
 
-    // -------------------------------------------------------------
-    // Auswahl im TreeView
-    // -------------------------------------------------------------
-
-    private void StorageTreeView_SelectionChanged(
-        TreeView sender,
-        TreeViewSelectionChangedEventArgs args)
-    {
-        if (args.AddedItems.Count == 0)
-            return;
-
-        object? selected =
-            args.AddedItems[0];
-
-        StorageItem? item = null;
-
-        if (selected is TreeViewNode node)
+        private void StorageTreeView_SelectionChanged(
+            TreeView sender,
+            TreeViewSelectionChangedEventArgs args)
         {
-            item = node.Content as StorageItem;
+            if (args.AddedItems.Count == 0)
+            {
+                ShowNoSelection();
+                return;
+            }
+
+            if (args.AddedItems[0] is not TreeViewNode node)
+            {
+                ShowNoSelection();
+                return;
+            }
+
+            if (node.Content is not StorageItem item)
+            {
+                ShowNoSelection();
+                return;
+            }
+
+            ShowDetails(item);
         }
-        else if (selected is StorageItem storageItem)
+
+        // ============================================================
+        // Detailbereich
+        // ============================================================
+
+        private void ShowDetails(StorageItem item)
         {
-            item = storageItem;
+            DetailPlaceholder.Visibility =
+                Visibility.Collapsed;
+
+            DetailPanel.Visibility =
+                Visibility.Visible;
+
+            DetailName.Text =
+                item.Name;
+
+            DetailDescription.Text =
+                item.Description;
+
+            if (item.Type == StorageItemType.Disk)
+            {
+                ShowDiskDetails(item);
+            }
+            else
+            {
+                ShowPartitionDetails(item);
+            }
         }
 
-        if (item == null)
-            return;
+        // ============================================================
+        // Datenträgerdetails
+        // ============================================================
 
-        // ---------------------------------------------------------
-        // Details füllen
-        // ---------------------------------------------------------
-
-        DetailName.Text =
-            item.Name;
-
-        DetailDescription.Text =
-            item.Description;
-
-        DetailDevice.Text =
-            $"Gerät: {item.Device}";
-
-        DetailFileSystem.Text =
-            $"Dateisystem: {item.FileSystem}";
-
-        DetailTotal.Text =
-            $"Gesamt: {item.TotalSpace}";
-
-        DetailUsed.Text =
-            $"Belegt: {item.UsedSpace}";
-
-        DetailFree.Text =
-            $"Frei: {item.FreeSpace}";
-
-        DetailUsage.Text =
-            $"Auslastung: {item.UsageText}";
-
-        DetailPartitionType.Text =
-            $"Partitionstyp: {item.PartitionType}";
-
-        // ---------------------------------------------------------
-        // Detailbereich sichtbar machen
-        // ---------------------------------------------------------
-
-        DetailPlaceholder.Visibility =
-            Visibility.Collapsed;
-
-        DetailPanel.Visibility =
-            Visibility.Visible;
-    }
-
-    // -------------------------------------------------------------
-    // Hilfsfunktionen
-    // -------------------------------------------------------------
-
-    private static ulong ToUInt64(object? value)
-    {
-        if (value == null)
-            return 0;
-
-        try
+        private void ShowDiskDetails(StorageItem item)
         {
-            return Convert.ToUInt64(value);
+            DetailDevice.Text =
+                $"Gerät: {item.Device}";
+
+            DetailVolume.Text =
+                "Laufwerk: –";
+
+            DetailFileSystem.Text =
+                "Dateisystem: –";
+
+            DetailTotal.Text =
+                $"Größe: {FormatBytes(item.TotalBytes)}";
+
+            DetailUsed.Text =
+                "Belegt: –";
+
+            DetailFree.Text =
+                "Frei: –";
+
+            DetailUsage.Text =
+                "Auslastung: –";
+
+            DetailInterface.Text =
+                string.IsNullOrWhiteSpace(item.InterfaceType)
+                    ? "Schnittstelle: –"
+                    : $"Schnittstelle: {item.InterfaceType}";
+
+            DetailMediaType.Text =
+                string.IsNullOrWhiteSpace(item.MediaType)
+                    ? "Medientyp: –"
+                    : $"Medientyp: {item.MediaType}";
+
+            DetailPartitionType.Text =
+                string.Empty;
+
+            DetailPrimaryPartition.Text =
+                string.Empty;
+
+            DetailBootPartition.Text =
+                string.Empty;
+
+            DetailHardwareTitle.Text =
+                "Hardwareinformationen";
         }
-        catch
+
+        // ============================================================
+        // Partitiondetails
+        // ============================================================
+
+        private void ShowPartitionDetails(StorageItem item)
         {
-            return 0;
+            DetailDevice.Text =
+                $"Gerät: {item.Device}";
+
+            DetailVolume.Text =
+                string.IsNullOrWhiteSpace(item.VolumeDeviceId)
+                    ? "Laufwerk: –"
+                    : $"Laufwerk: {item.VolumeDeviceId}";
+
+            DetailFileSystem.Text =
+                string.IsNullOrWhiteSpace(item.FileSystem)
+                    ? "Dateisystem: –"
+                    : $"Dateisystem: {item.FileSystem}";
+
+            DetailTotal.Text =
+                $"Größe: {FormatBytes(item.TotalBytes)}";
+
+            DetailUsed.Text =
+                item.UsedBytes > 0
+                    ? $"Belegt: {FormatBytes(item.UsedBytes)}"
+                    : "Belegt: –";
+
+            DetailFree.Text =
+                item.FreeBytes > 0
+                    ? $"Frei: {FormatBytes(item.FreeBytes)}"
+                    : "Frei: –";
+
+            DetailUsage.Text =
+                item.TotalBytes > 0 &&
+                item.FreeBytes >= 0
+                    ? $"Auslastung: {item.UsagePercent:0}%"
+                    : "Auslastung: –";
+
+            DetailInterface.Text =
+                string.Empty;
+
+            DetailMediaType.Text =
+                string.Empty;
+
+            DetailPartitionType.Text =
+                string.IsNullOrWhiteSpace(item.PartitionType)
+                    ? "Partitionstyp: –"
+                    : $"Partitionstyp: {item.PartitionType}";
+
+            DetailPrimaryPartition.Text =
+                $"Primäre Partition: " +
+                $"{(item.PrimaryPartition ? "Ja" : "Nein")}";
+
+            DetailBootPartition.Text =
+                $"Bootpartition: " +
+                $"{(item.BootPartition ? "Ja" : "Nein")}";
+
+            DetailHardwareTitle.Text =
+                "Partitionsinformationen";
         }
-    }
 
-    private static string FormatBytes(object? value)
-    {
-        ulong bytes =
-            ToUInt64(value);
+        // ============================================================
+        // Keine Auswahl
+        // ============================================================
 
-        return FormatBytes(bytes);
-    }
+        private void ShowNoSelection()
+        {
+            DetailPlaceholder.Visibility =
+                Visibility.Visible;
 
-    private static string FormatBytes(ulong bytes)
-    {
-        if (bytes == 0)
-            return "-";
+            DetailPanel.Visibility =
+                Visibility.Collapsed;
+        }
 
-        const double KB = 1024.0;
-        const double MB = KB * 1024.0;
-        const double GB = MB * 1024.0;
-        const double TB = GB * 1024.0;
+        // ============================================================
+        // Formatierung
+        // ============================================================
 
-        if (bytes >= TB)
-            return $"{bytes / TB:0.0} TB";
+        private static string FormatBytes(long bytes)
+        {
+            if (bytes <= 0)
+                return "–";
 
-        if (bytes >= GB)
-            return $"{bytes / GB:0.0} GB";
+            const double gb =
+                1024.0 * 1024.0 * 1024.0;
 
-        if (bytes >= MB)
-            return $"{bytes / MB:0.0} MB";
+            const double tb =
+                gb * 1024.0;
 
-        if (bytes >= KB)
-            return $"{bytes / KB:0.0} KB";
+            if (bytes >= tb)
+                return $"{bytes / tb:0.0} TB";
 
-        return $"{bytes} B";
-    }
+            return $"{bytes / gb:0.0} GB";
+        }
 
-    // -------------------------------------------------------------
-    // Datenmodell
-    // -------------------------------------------------------------
+        // ============================================================
+        // Datenmodelle
+        // ============================================================
 
-    private sealed class StorageItem
-    {
-        public string Name { get; set; } = "";
+        private enum StorageItemType
+        {
+            Disk,
+            Partition
+        }
 
-        public string Description { get; set; } = "";
+        private sealed class VolumeInfo
+        {
+            public string DeviceId { get; set; } = string.Empty;
 
-        public string Device { get; set; } = "";
+            public string VolumeName { get; set; } =
+                string.Empty;
 
-        public string DriveLetter { get; set; } = "";
+            public string FileSystem { get; set; } =
+                string.Empty;
 
-        public string VolumeName { get; set; } = "-";
+            public long TotalBytes { get; set; }
 
-        public string FileSystem { get; set; } = "-";
+            public long FreeBytes { get; set; }
+        }
 
-        public string TotalSpace { get; set; } = "-";
+        private sealed class StorageItem
+        {
+            public StorageItemType Type { get; set; }
 
-        public string UsedSpace { get; set; } = "-";
+            public string Name { get; set; } =
+                string.Empty;
 
-        public string FreeSpace { get; set; } = "-";
+            public string Description { get; set; } =
+                string.Empty;
 
-        public double UsagePercent { get; set; }
+            public string Device { get; set; } =
+                string.Empty;
 
-        public string UsageText { get; set; } = "-";
+            public long TotalBytes { get; set; }
 
-        public string PartitionType { get; set; } = "-";
+            public long FreeBytes { get; set; }
 
-        public string InterfaceType { get; set; } = "-";
+            public int DiskIndex { get; set; }
 
-        public bool BootPartition { get; set; }
+            public int PartitionIndex { get; set; }
+
+            public string InterfaceType { get; set; } =
+                string.Empty;
+
+            public string MediaType { get; set; } =
+                string.Empty;
+
+            public string PartitionType { get; set; } =
+                string.Empty;
+
+            public bool BootPartition { get; set; }
+
+            public bool PrimaryPartition { get; set; }
+
+            public string VolumeDeviceId { get; set; } =
+                string.Empty;
+
+            public string VolumeName { get; set; } =
+                string.Empty;
+
+            public string FileSystem { get; set; } =
+                string.Empty;
+
+            public List<StorageItem> Children { get; } =
+                new();
+
+            public long UsedBytes =>
+                Type == StorageItemType.Partition &&
+                TotalBytes > 0 &&
+                FreeBytes >= 0
+                    ? TotalBytes - FreeBytes
+                    : 0;
+
+            public double UsagePercent =>
+                Type == StorageItemType.Partition &&
+                TotalBytes > 0 &&
+                FreeBytes >= 0
+                    ? ((double)(TotalBytes - FreeBytes)
+                        / TotalBytes) * 100.0
+                    : 0;
+
+            public string TotalSpace =>
+                FormatBytes(TotalBytes);
+
+            public string UsedSpace =>
+                Type == StorageItemType.Partition &&
+                UsedBytes > 0
+                    ? FormatBytes(UsedBytes)
+                    : "–";
+
+            public string UsageText =>
+                Type == StorageItemType.Partition &&
+                TotalBytes > 0 &&
+                FreeBytes >= 0
+                    ? $"{UsagePercent:0}%"
+                    : "–";
+        }
     }
 }
