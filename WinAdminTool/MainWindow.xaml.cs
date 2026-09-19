@@ -65,6 +65,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Bluetooth")
+        {
+            ContentFrame.Content = new Views.BluetoothPage();
+            return;
+        }
+
 
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 

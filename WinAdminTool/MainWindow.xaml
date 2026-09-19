@@ -73,6 +73,13 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
+                <NavigationViewItem Content="Bluetooth"
+                    Tag="Bluetooth">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Setting" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
                 <NavigationViewItem
                     Content="Werkzeuge"
                     Tag="Tools">

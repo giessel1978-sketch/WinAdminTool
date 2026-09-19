@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Controls\CriticalIndicator.xaml" />
+    <None Remove="Views\BluetoothPage.xaml" />
     <None Remove="Views\EventsPage.xaml" />
     <None Remove="Views\NetworkPage.xaml" />
     <None Remove="Views\OverviewPage.xaml" />
@@ -51,6 +52,11 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\BluetoothPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\NetworkPage.xaml">
