@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="WinAdminTool.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinAdminTool.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Disabled">
+
+        <Grid
+            MaxWidth="1100"
+            Padding="32,24,32,40"
+            RowSpacing="24">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+
+            <!-- Überschrift -->
+            <StackPanel
+                Grid.Row="0"
+                Spacing="6">
+
+                <TextBlock
+                    Text="Über WinAdminTool"
+                    FontSize="32"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="Informationen über das Projekt, die Entwicklung und die Lizenz."
+                    FontSize="15"
+                    Opacity="0.7"/>
+
+            </StackPanel>
+
+
+            <!-- Logo und Kurzbeschreibung -->
+            <Border
+                Grid.Row="1"
+                Padding="32"
+                CornerRadius="12"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <Grid ColumnSpacing="32">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <!-- WinAdminTool Logo -->
+                    <Image
+                        Grid.Column="0"
+                        Width="180"
+                        Height="180"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Source="/Assets/WinAdminToolLogo.png"
+                        Stretch="Uniform"/>
+
+
+                    <!-- Projektbeschreibung -->
+                    <StackPanel
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Spacing="12">
+
+                        <TextBlock
+                            Text="WinAdminTool"
+                            FontSize="28"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Version 1.0.0 · Windows 10 / Windows 11 · x64"
+                            FontSize="15"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="Ein kostenloses Windows-Administrations- und Diagnosetool für private und nicht-kommerzielle Nutzung."
+                            FontSize="17"
+                            TextWrapping="Wrap"
+                            MaxWidth="700"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- Informationen -->
+            <Grid
+                Grid.Row="2"
+                ColumnSpacing="16"
+                RowSpacing="16">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+
+                <!-- Entwickler -->
+                <Border
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Padding="24"
+                    CornerRadius="12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="8">
+
+                        <TextBlock
+                            Text="Entwickler"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="Dennis Giessel"
+                            FontSize="20"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="LordNikon999"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- Lizenz -->
+                <Border
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Padding="24"
+                    CornerRadius="12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="8">
+
+                        <TextBlock
+                            Text="Lizenz"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="GNU General Public License v3.0"
+                            FontSize="20"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="GPLv3"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- Technologie -->
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Padding="24"
+                    CornerRadius="12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="8">
+
+                        <TextBlock
+                            Text="Technologie"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="C# · .NET · WinUI 3"
+                            FontSize="20"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Windows App SDK"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- Veröffentlichung -->
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Padding="24"
+                    CornerRadius="12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="8">
+
+                        <TextBlock
+                            Text="Veröffentlichung"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="Open Source"
+                            FontSize="20"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Quellcode und Releases über GitHub"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+
+            <!-- Projekt und Datenschutz -->
+            <Grid
+                Grid.Row="3"
+                ColumnSpacing="16">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+
+                <!-- Projekt -->
+                <Border
+                    Grid.Column="0"
+                    Padding="24"
+                    CornerRadius="12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="12">
+
+                        <TextBlock
+                            Text="Projekt"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="LordNikon999 / WinAdminTool"
+                            FontSize="18"
+                            FontWeight="SemiBold"/>
+
+                        <Button
+    Content="GitHub öffnen"
+    HorizontalAlignment="Left"
+    Click="GitHubButton_Click"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- Datenschutz -->
+                <Border
+                    Grid.Column="1"
+                    Padding="24"
+                    CornerRadius="12"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+
+                    <StackPanel Spacing="12">
+
+                        <TextBlock
+                            Text="Datenschutz"
+                            FontSize="14"
+                            Opacity="0.7"/>
+
+                        <TextBlock
+                            Text="WinAdminTool arbeitet lokal auf dem Computer. Es werden keine Nutzungsdaten, Systeminformationen oder Diagnoseinformationen an den Entwickler übertragen."
+                            FontSize="15"
+                            TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+
+            <!-- Hinweise -->
+            <Border
+                Grid.Row="4"
+                Padding="24"
+                CornerRadius="12"
+                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+
+                <StackPanel Spacing="16">
+
+                    <TextBlock
+                        Text="Hinweis"
+                        FontSize="14"
+                        Opacity="0.7"/>
+
+                    <TextBlock
+                        Text="Administrative Änderungen können Auswirkungen auf das System haben. Verwende diese Funktionen mit Bedacht."
+                        FontSize="15"
+                        TextWrapping="Wrap"/>
+
+                    <TextBlock
+                        Text="Entwicklungsunterstützung durch ChatGPT."
+                        FontSize="14"
+                        Opacity="0.7"
+                        TextWrapping="Wrap"/>
+
+                    <TextBlock
+                        Text="© 2026 Dennis Giessel"
+                        FontSize="13"
+                        Opacity="0.6"/>
+
+                </StackPanel>
+
+            </Border>
+
+        </Grid>
+
+    </ScrollViewer>
+
+</Page>
