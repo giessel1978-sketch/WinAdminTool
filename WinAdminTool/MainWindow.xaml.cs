@@ -77,6 +77,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Security")
+        {
+            ContentFrame.Content = new Views.SecurityPage();
+            return;
+        }
+
         if (tag == "Tools")
         {
             ContentFrame.Content = new Views.ToolsPage();
