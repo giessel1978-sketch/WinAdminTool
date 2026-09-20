@@ -1,0 +1,266 @@
+<Page
+    x:Class="WinAdminTool.Views.ToolsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+
+        <Grid Padding="24">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+
+            <!-- Überschrift -->
+
+            <StackPanel Grid.Row="0">
+
+                <TextBlock
+                    Text="Werkzeuge"
+                    FontSize="28"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="Windows-Werkzeuge, Diagnose und Wartung zentral verwalten"
+                    Margin="0,4,0,0"
+                    Opacity="0.7"/>
+
+            </StackPanel>
+
+
+            <!-- Windows-Werkzeuge -->
+
+            <StackPanel
+                Grid.Row="1"
+                Margin="0,24,0,0">
+
+                <TextBlock
+                    Text="Windows-Werkzeuge"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,12"/>
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="Geräte-Manager"
+                        Click="DeviceManagerButton_Click"/>
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="Computerverwaltung"
+                        Click="ComputerManagementButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="Datenträgerverwaltung"
+                        Click="DiskManagementButton_Click"/>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="Systeminformationen"
+                        Click="SystemInformationButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0,0,4,0"
+                        Content="Task-Manager"
+                        Click="TaskManagerButton_Click"/>
+
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="4,0,0,0"
+                        Content="Ereignisanzeige"
+                        Click="EventViewerButton_Click"/>
+
+                </Grid>
+
+            </StackPanel>
+
+
+            <!-- Kommandozeile & Netzwerk -->
+
+            <StackPanel
+                Grid.Row="2"
+                Margin="0,20,0,0">
+
+                <TextBlock
+                    Text="Kommandozeile &amp; Netzwerk"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,12"/>
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="Eingabeaufforderung"
+                        Click="CommandPromptButton_Click"/>
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="PowerShell"
+                        Click="PowerShellButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="Windows Terminal"
+                        Click="WindowsTerminalButton_Click"/>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="Netzwerkdiagnose"
+                        Click="NetworkDiagnosticsButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="DNS-Cache leeren"
+                        Click="FlushDnsButton_Click"/>
+
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="IP-Adresse erneuern"
+                        Click="RenewIpAddressButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="0,0,4,0"
+                        Content="Winsock zurücksetzen"
+                        Click="ResetWinsockButton_Click"/>
+
+                    <Button
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Margin="4,0,0,0"
+                        Content="TCP/IP zurücksetzen"
+                        Click="ResetTcpIpButton_Click"/>
+
+                </Grid>
+
+            </StackPanel>
+
+
+            <!-- Wartung -->
+
+            <StackPanel
+                Grid.Row="3"
+                Margin="0,20,0,0">
+
+                <TextBlock
+                    Text="Wartung"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,12"/>
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="Systemdateiprüfung (SFC)"
+                        Click="SfcButton_Click"/>
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="DISM"
+                        Click="DismButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,0,4,0"
+                        Content="CHKDSK"
+                        Click="ChkdskButton_Click"/>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="4,0,0,0"
+                        Content="Windows Update"
+                        Click="WindowsUpdateButton_Click"/>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Grid>
+
+    </ScrollViewer>
+
+</Page>

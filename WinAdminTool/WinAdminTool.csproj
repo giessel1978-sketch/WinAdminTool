@@ -23,6 +23,7 @@
     <None Remove="Views\ServicesPage.xaml" />
     <None Remove="Views\StoragePage.xaml" />
     <None Remove="Views\SystemPage.xaml" />
+    <None Remove="Views\ToolsPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,11 @@
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Views\ToolsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Views\BluetoothPage.xaml">

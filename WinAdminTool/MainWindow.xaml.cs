@@ -71,6 +71,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Tools")
+        {
+            ContentFrame.Content = new Views.ToolsPage();
+            return;
+        }
+
 
         string title = selectedItem.Content?.ToString() ?? "WinAdminTool";
 
