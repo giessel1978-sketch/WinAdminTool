@@ -1,0 +1,386 @@
+<Page
+    x:Class="WinAdminTool.Views.AutostartPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- Überschrift -->
+
+        <StackPanel Grid.Row="0">
+
+            <TextBlock
+                Text="Autostart"
+                FontSize="28"
+                FontWeight="SemiBold"/>
+
+            <TextBlock
+                Text="Programme und Einträge verwalten, die beim Start von Windows automatisch ausgeführt werden"
+                Margin="0,4,0,0"
+                Opacity="0.7"/>
+
+        </StackPanel>
+
+
+        <!-- Kopfbereich -->
+
+        <Grid
+            Grid.Row="1"
+            Margin="0,24,0,12">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <TextBox
+                x:Name="SearchTextBox"
+                PlaceholderText="Autostart durchsuchen..."
+                Margin="0,0,8,0"
+                TextChanged="SearchTextBox_TextChanged"/>
+
+
+            <ComboBox
+                x:Name="StatusFilterComboBox"
+                Grid.Column="1"
+                Margin="0,0,16,0"
+                SelectedIndex="0"
+                SelectionChanged="StatusFilterComboBox_SelectionChanged">
+
+                <ComboBoxItem Content="Alle"/>
+                <ComboBoxItem Content="Aktiviert"/>
+                <ComboBoxItem Content="Deaktiviert"/>
+
+            </ComboBox>
+
+
+            <TextBlock
+                x:Name="EntryCountTextBlock"
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Opacity="0.7"/>
+
+        </Grid>
+
+
+        <!-- Liste -->
+
+        <Border
+            Grid.Row="2"
+            CornerRadius="8"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+            <ScrollViewer
+                HorizontalScrollBarVisibility="Auto"
+                HorizontalScrollMode="Enabled"
+                VerticalScrollBarVisibility="Auto"
+                VerticalScrollMode="Enabled"
+                HorizontalAlignment="Stretch">
+
+                <Grid Width="1800">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+
+                    <!-- Tabellenkopf -->
+
+                    <Grid
+                        Grid.Row="0"
+                        Padding="12,10">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="1000"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Grid.Column="0"
+                            Text="Name"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="Status"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Grid.Column="2"
+                            Text="Quelle"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Grid.Column="3"
+                            Text="Benutzer"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Grid.Column="4"
+                            Text="Befehl / Pfad"
+                            FontWeight="SemiBold"/>
+
+                    </Grid>
+
+
+                    <!-- Einträge -->
+
+                    <ListView
+                        Grid.Row="1"
+                        x:Name="EntriesListView"
+                        SelectionMode="Single"
+                        SelectionChanged="EntriesListView_SelectionChanged">
+
+                        <ListView.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <Grid
+                                    Width="1800"
+                                    Padding="12,8">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="300"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="1000"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Text="{Binding Name}"
+                                        TextTrimming="CharacterEllipsis"/>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding Status}"
+                                        TextTrimming="CharacterEllipsis"/>
+
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Text="{Binding Source}"
+                                        TextTrimming="CharacterEllipsis"/>
+
+                                    <TextBlock
+                                        Grid.Column="3"
+                                        Text="{Binding User}"
+                                        TextTrimming="CharacterEllipsis"/>
+
+                                    <TextBlock
+                                        Grid.Column="4"
+                                        Text="{Binding Command}"/>
+
+                                </Grid>
+
+                            </DataTemplate>
+
+                        </ListView.ItemTemplate>
+
+                    </ListView>
+
+                </Grid>
+
+            </ScrollViewer>
+
+        </Border>
+
+
+        <!-- Detailbereich -->
+
+        <Border
+            Grid.Row="3"
+            Margin="0,16,0,0"
+            Padding="20"
+            CornerRadius="8"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+
+                <TextBlock
+                    Grid.Row="0"
+                    Text="Details"
+                    FontSize="20"
+                    FontWeight="SemiBold"/>
+
+
+                <!-- Name -->
+
+                <Grid
+                    Grid.Row="1"
+                    Margin="0,16,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Text="Name"
+                        Opacity="0.7"/>
+
+                    <TextBlock
+                        x:Name="DetailNameTextBlock"
+                        Grid.Column="1"
+                        Text="Kein Eintrag ausgewählt"
+                        TextTrimming="CharacterEllipsis"/>
+
+                </Grid>
+
+
+                <!-- Status -->
+
+                <Grid
+                    Grid.Row="2"
+                    Margin="0,8,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Text="Status"
+                        Opacity="0.7"/>
+
+                    <TextBlock
+                        x:Name="DetailStatusTextBlock"
+                        Grid.Column="1"
+                        Text="-"/>
+
+                </Grid>
+
+
+                <!-- Quelle -->
+
+                <Grid
+                    Grid.Row="3"
+                    Margin="0,8,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Text="Quelle"
+                        Opacity="0.7"/>
+
+                    <TextBlock
+                        x:Name="DetailSourceTextBlock"
+                        Grid.Column="1"
+                        Text="-"/>
+
+                </Grid>
+
+
+                <!-- Benutzer -->
+
+                <Grid
+                    Grid.Row="4"
+                    Margin="0,8,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Text="Benutzer"
+                        Opacity="0.7"/>
+
+                    <TextBlock
+                        x:Name="DetailUserTextBlock"
+                        Grid.Column="1"
+                        Text="-"/>
+
+                </Grid>
+
+
+                <!-- Befehl / Pfad -->
+
+                <Grid
+                    Grid.Row="5"
+                    Margin="0,8,0,0">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Text="Befehl / Pfad"
+                        Opacity="0.7"/>
+
+                    <TextBlock
+                        x:Name="DetailCommandTextBlock"
+                        Grid.Column="1"
+                        Text="-"
+                        TextWrapping="Wrap"/>
+
+                </Grid>
+
+
+                <!-- Aktionen -->
+
+                <StackPanel
+                    Grid.Row="6"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="160,16,0,0">
+
+                    <Button
+                        x:Name="ToggleAutostartButton"
+                        Content="Deaktivieren"
+                        IsEnabled="False"
+                        Click="ToggleAutostartButton_Click"/>
+
+                    <Button
+                        x:Name="OpenAutostartLocationButton"
+                        Content="Speicherort öffnen"
+                        IsEnabled="False"
+                        Click="OpenAutostartLocationButton_Click"/>
+
+                    <Button
+                        x:Name="RemoveAutostartButton"
+                        Content="Entfernen"
+                        IsEnabled="False"
+                        Click="RemoveAutostartButton_Click"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+</Page>

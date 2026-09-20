@@ -66,6 +66,14 @@
                 </NavigationViewItem>
 
                 <NavigationViewItem
+    Content="Autostart"
+    Tag="Autostart">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Play"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem
                     Content="Ereignisse"
                     Tag="Events">
                     <NavigationViewItem.Icon>

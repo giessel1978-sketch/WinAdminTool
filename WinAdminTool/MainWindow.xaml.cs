@@ -46,6 +46,12 @@ public sealed partial class MainWindow : Window
             return;
         }
 
+        if (tag == "Autostart")
+        {
+            ContentFrame.Content = new Views.AutostartPage();
+            return;
+        }
+
         if (tag == "Events")
         {
             ContentFrame.Content = new Views.EventsPage();
