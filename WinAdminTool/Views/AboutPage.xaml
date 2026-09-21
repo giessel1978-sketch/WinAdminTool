@@ -84,7 +84,7 @@
                             FontWeight="SemiBold"/>
 
                         <TextBlock
-                            Text="Version 1.0.0 · Windows 10 / Windows 11 · x64"
+                            x:Name="VersionTextBlock"
                             FontSize="15"
                             Opacity="0.7"/>
 
