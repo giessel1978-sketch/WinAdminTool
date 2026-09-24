@@ -113,45 +113,6 @@ public sealed partial class ToolsPage : Page
         });
     }
 
-    private void SfcButton_Click(object sender, RoutedEventArgs e)
-    {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = "/k sfc /scannow",
-            UseShellExecute = true
-        });
-    }
-
-    private void DismButton_Click(object sender, RoutedEventArgs e)
-    {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = "/k DISM /Online /Cleanup-Image /RestoreHealth",
-            UseShellExecute = true
-        });
-    }
-
-    private void ChkdskButton_Click(object sender, RoutedEventArgs e)
-    {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "cmd.exe",
-            Arguments = "/k chkdsk C:",
-            UseShellExecute = true
-        });
-    }
-
-    private void WindowsUpdateButton_Click(object sender, RoutedEventArgs e)
-    {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "ms-settings:windowsupdate",
-            UseShellExecute = true
-        });
-    }
-
     private async void RenewIpAddressButton_Click(object sender, RoutedEventArgs e)
     {
         ContentDialog dialog = new ContentDialog
@@ -223,6 +184,12 @@ public sealed partial class ToolsPage : Page
             UseShellExecute = true
         });
     }
+
+
+    // ============================================================
+    // Netzwerkdiagnose
+    // ============================================================
+
     private void IpConfigButton_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
@@ -282,6 +249,12 @@ public sealed partial class ToolsPage : Page
             UseShellExecute = true
         });
     }
+
+
+    // ============================================================
+    // System & Verwaltung
+    // ============================================================
+
     private void ServicesManagementButton_Click(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo
@@ -371,6 +344,158 @@ public sealed partial class ToolsPage : Page
         Process.Start(new ProcessStartInfo
         {
             FileName = "gpedit.msc",
+            UseShellExecute = true
+        });
+    }
+
+
+    // ============================================================
+    // Wartung & Reparatur
+    // ============================================================
+
+    private void SfcButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k sfc /scannow",
+            UseShellExecute = true
+        });
+    }
+
+    private void DismCheckHealthButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k DISM /Online /Cleanup-Image /CheckHealth",
+            UseShellExecute = true
+        });
+    }
+
+    private void DismScanHealthButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k DISM /Online /Cleanup-Image /ScanHealth",
+            UseShellExecute = true
+        });
+    }
+
+    private async void DismRestoreHealthButton_Click(object sender, RoutedEventArgs e)
+    {
+        ContentDialog dialog = new ContentDialog
+        {
+            Title = "DISM-Reparatur starten?",
+            Content = "DISM überprüft das Windows-Komponentenabbild und versucht, erkannte Beschädigungen zu reparieren. Der Vorgang kann einige Zeit dauern.",
+            PrimaryButtonText = "Reparatur starten",
+            CloseButtonText = "Abbrechen",
+            XamlRoot = XamlRoot
+        };
+
+        ContentDialogResult result = await dialog.ShowAsync();
+
+        if (result != ContentDialogResult.Primary)
+            return;
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k DISM /Online /Cleanup-Image /RestoreHealth",
+            UseShellExecute = true
+        });
+    }
+
+    private void ChkdskButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k chkdsk C:",
+            UseShellExecute = true
+        });
+    }
+
+    private void WindowsUpdateButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "ms-settings:windowsupdate",
+            UseShellExecute = true
+        });
+    }
+    private void AnalyzeComponentStoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k DISM /Online /Cleanup-Image /AnalyzeComponentStore",
+            UseShellExecute = true
+        });
+    }
+
+    private void UserTempButton_Click(object sender, RoutedEventArgs e)
+    {
+        string? tempPath = Environment.GetEnvironmentVariable("TEMP");
+
+        if (!string.IsNullOrWhiteSpace(tempPath))
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"\"{tempPath}\"",
+                UseShellExecute = true
+            });
+        }
+    }
+
+    private void WindowsTempButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = "C:\\Windows\\Temp",
+            UseShellExecute = true
+        });
+    }
+
+    private void SoftwareDistributionButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = "C:\\Windows\\SoftwareDistribution",
+            UseShellExecute = true
+        });
+    }
+
+    private void HostsFileButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "notepad.exe",
+            Arguments = "C:\\Windows\\System32\\drivers\\etc\\hosts",
+            UseShellExecute = true
+        });
+    }
+
+    private void System32Button_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = "C:\\Windows\\System32",
+            UseShellExecute = true
+        });
+    }
+
+    private void WindowsFolderButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "explorer.exe",
+            Arguments = "C:\\Windows",
             UseShellExecute = true
         });
     }

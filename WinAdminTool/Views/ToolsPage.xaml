@@ -16,6 +16,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
 
@@ -334,14 +335,14 @@
             </StackPanel>
 
 
-            <!-- Wartung -->
+            <!-- Wartung & Reparatur -->
 
             <StackPanel
                 Grid.Row="4"
                 Margin="0,20,0,0">
 
                 <TextBlock
-                    Text="Wartung"
+                    Text="Wartung &amp; Reparatur"
                     FontSize="20"
                     FontWeight="SemiBold"
                     Margin="0,0,0,12"/>
@@ -354,6 +355,8 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
                         <RowDefinition Height="80"/>
                         <RowDefinition Height="80"/>
                     </Grid.RowDefinitions>
@@ -370,23 +373,121 @@
                         Grid.Row="0"
                         Grid.Column="1"
                         Margin="4,0,0,4"
-                        Content="DISM"
-                        Click="DismButton_Click"/>
+                        Content="DISM – Status prüfen"
+                        Click="DismCheckHealthButton_Click"/>
 
 
                     <Button
                         Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="DISM – Scan durchführen"
+                        Click="DismScanHealthButton_Click"/>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="DISM – Reparieren"
+                        Click="DismRestoreHealthButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="2"
                         Grid.Column="0"
                         Margin="0,0,4,0"
                         Content="CHKDSK"
                         Click="ChkdskButton_Click"/>
 
                     <Button
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Grid.Column="1"
                         Margin="4,0,0,0"
                         Content="Windows Update"
                         Click="WindowsUpdateButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="0,0,4,0"
+                        Content="Komponentenstore prüfen"
+                        Click="AnalyzeComponentStoreButton_Click"/>
+
+                </Grid>
+
+            </StackPanel>
+
+
+            <!-- Schnellzugriff -->
+
+            <StackPanel
+                Grid.Row="5"
+                Margin="0,20,0,0">
+
+                <TextBlock
+                    Text="Schnellzugriff"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Margin="0,0,0,12"/>
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="Benutzer-Temp öffnen"
+                        Click="UserTempButton_Click"/>
+
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="Windows-Temp öffnen"
+                        Click="WindowsTempButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="0,0,4,4"
+                        Content="SoftwareDistribution öffnen"
+                        Click="SoftwareDistributionButton_Click"/>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="4,0,0,4"
+                        Content="Hosts-Datei öffnen"
+                        Click="HostsFileButton_Click"/>
+
+
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="0,0,4,0"
+                        Content="System32 öffnen"
+                        Click="System32Button_Click"/>
+
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="4,0,0,0"
+                        Content="Windows-Ordner öffnen"
+                        Click="WindowsFolderButton_Click"/>
 
                 </Grid>
 
