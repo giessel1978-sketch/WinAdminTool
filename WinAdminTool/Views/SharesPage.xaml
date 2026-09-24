@@ -1,0 +1,445 @@
+ <Page
+    x:Class="WinAdminTool.Views.SharesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel
+            Padding="24"
+            Spacing="16">
+
+            <!-- Kopfbereich -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock
+                        Text="Freigaben"
+                        FontSize="32"
+                        FontWeight="SemiBold"/>
+
+                    <TextBlock
+                        Text="Übersicht der auf diesem Computer vorhandenen SMB-Freigaben"
+                        FontSize="14"
+                        Opacity="0.7"
+                        Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <Button
+                    Grid.Column="1"
+                    Content="Aktualisieren"
+                    Click="RefreshButton_Click"
+                    VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Übersichtskarten -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Freigaben -->
+                <Button
+                    Grid.Column="0"
+                    Margin="0,0,6,0"
+                    Padding="16"
+                    Click="ShareCardButton_Click"
+                    HorizontalContentAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock
+                                Text="Freigaben"
+                                FontSize="14"
+                                Opacity="0.7"/>
+
+                            <TextBlock
+                                x:Name="ShareCountText"
+                                Text="0"
+                                FontSize="28"
+                                FontWeight="SemiBold"
+                                Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="›"
+                            FontSize="28"
+                            Opacity="0.6"
+                            VerticalAlignment="Center"
+                            Margin="16,0,4,0"/>
+                    </Grid>
+
+                </Button>
+
+                <!-- Aktive Sitzungen -->
+                <Button
+                    Grid.Column="1"
+                    Margin="3,0,3,0"
+                    Padding="16"
+                    Click="SessionCardButton_Click"
+                    HorizontalContentAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock
+                                Text="Aktive Sitzungen"
+                                FontSize="14"
+                                Opacity="0.7"/>
+
+                            <TextBlock
+                                x:Name="SessionCountText"
+                                Text="0"
+                                FontSize="28"
+                                FontWeight="SemiBold"
+                                Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="›"
+                            FontSize="28"
+                            Opacity="0.6"
+                            VerticalAlignment="Center"
+                            Margin="16,0,4,0"/>
+                    </Grid>
+
+                </Button>
+
+                <!-- Geöffnete Dateien -->
+                <Button
+                    Grid.Column="2"
+                    Margin="6,0,0,0"
+                    Padding="16"
+                    Click="OpenFileCardButton_Click"
+                    HorizontalContentAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock
+                                Text="Geöffnete Dateien"
+                                FontSize="14"
+                                Opacity="0.7"/>
+
+                            <TextBlock
+                                x:Name="OpenFileCountText"
+                                Text="0"
+                                FontSize="28"
+                                FontWeight="SemiBold"
+                                Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="›"
+                            FontSize="28"
+                            Opacity="0.6"
+                            VerticalAlignment="Center"
+                            Margin="16,0,4,0"/>
+                    </Grid>
+
+                </Button>
+
+            </Grid>
+
+            <!-- Aktueller Bereich -->
+            <TextBlock
+                x:Name="CurrentSectionText"
+                Text="Freigaben"
+                FontSize="20"
+                FontWeight="SemiBold"
+                Margin="0,8,0,0"/>
+
+            <!-- Liste + Details -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Linke Liste -->
+                <Border
+                    Grid.Column="0"
+                    Margin="0,0,8,0"
+                    Padding="12"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <!-- Freigaben -->
+                    <ListView
+                        x:Name="SharesListView"
+                        SelectionMode="Single"
+                        IsItemClickEnabled="False"
+                        SelectionChanged="SharesListView_SelectionChanged">
+
+                        <ListView.Header>
+                            <Grid Padding="8,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="220"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Text="Freigabe"
+                                    FontWeight="SemiBold"/>
+
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="Lokaler Pfad"
+                                    FontWeight="SemiBold"/>
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="Beschreibung"
+                                    FontWeight="SemiBold"/>
+                            </Grid>
+                        </ListView.Header>
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="8,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="220"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Text="{Binding Name}"
+                                        FontWeight="SemiBold"/>
+
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Text="{Binding Path}"
+                                        TextTrimming="CharacterEllipsis"/>
+
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Text="{Binding Description}"
+                                        TextTrimming="CharacterEllipsis"
+                                        Opacity="0.8"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+
+                    </ListView>
+                </Border>
+
+                <!-- Rechte Details -->
+                <Border
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    Padding="20"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+
+                    <ScrollViewer>
+                        <StackPanel
+                            Spacing="12">
+
+                            <TextBlock
+                                x:Name="DetailTitleText"
+                                Text="Details"
+                                FontSize="20"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                x:Name="DetailHintText"
+                                Text="Bitte einen Eintrag auswählen."
+                                Opacity="0.7"
+                                TextWrapping="Wrap"/>
+
+                            <!-- Freigabe-Details -->
+                            <StackPanel
+                                x:Name="ShareDetailsPanel"
+                                Visibility="Collapsed"
+                                Spacing="8">
+
+                                <TextBlock
+                                    Text="Freigabename"
+                                    FontSize="12"
+                                    Opacity="0.6"/>
+
+                                <TextBlock
+                                    x:Name="DetailNameText"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Lokaler Pfad"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailPathText"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Beschreibung"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailDescriptionText"
+                                    TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                            <!-- Sitzungs-Details -->
+                            <StackPanel
+                                x:Name="SessionDetailsPanel"
+                                Visibility="Collapsed"
+                                Spacing="8">
+
+                                <TextBlock
+                                    Text="Client-Computer"
+                                    FontSize="12"
+                                    Opacity="0.6"/>
+
+                                <TextBlock
+                                    x:Name="DetailClientComputerText"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Benutzer"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailClientUserText"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Session-ID"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailSessionIdText"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Geöffnete Dateien"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailNumOpensText"
+                                    TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                            <!-- Datei-Details -->
+                            <StackPanel
+                                x:Name="OpenFileDetailsPanel"
+                                Visibility="Collapsed"
+                                Spacing="8">
+
+                                <TextBlock
+                                    Text="Dateipfad"
+                                    FontSize="12"
+                                    Opacity="0.6"/>
+
+                                <TextBlock
+                                    x:Name="DetailFilePathText"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Client-Computer"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailFileClientText"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Benutzer"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailFileUserText"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Session-ID"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailFileSessionIdText"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="Datei-ID"
+                                    FontSize="12"
+                                    Opacity="0.6"
+                                    Margin="0,8,0,0"/>
+
+                                <TextBlock
+                                    x:Name="DetailFileIdText"
+                                    TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <TextBlock
+                x:Name="StatusText"
+                Text="Lade Freigaben..."
+                FontSize="13"
+                Opacity="0.7"
+                Margin="0,0,0,8"/>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

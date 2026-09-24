@@ -1,4 +1,4 @@
- <Window
+<Window
     x:Class="WinAdminTool.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -66,8 +66,8 @@
                 </NavigationViewItem>
 
                 <NavigationViewItem
-    Content="Autostart"
-    Tag="Autostart">
+                    Content="Autostart"
+                    Tag="Autostart">
                     <NavigationViewItem.Icon>
                         <SymbolIcon Symbol="Play"/>
                     </NavigationViewItem.Icon>
@@ -97,6 +97,15 @@
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
+                <!-- Freigaben -->
+                <NavigationViewItem
+                    Content="Freigaben"
+                    Tag="Shares">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Folder"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
                 <NavigationViewItem
                     Content="Bluetooth"
                     Tag="Bluetooth">
@@ -106,9 +115,9 @@
                 </NavigationViewItem>
 
                 <NavigationViewItem
-    Content="Sicherheit"
-    Tag="Security"
-    Icon="Important"/>
+                    Content="Sicherheit"
+                    Tag="Security"
+                    Icon="Important"/>
 
                 <NavigationViewItem
                     Content="Werkzeuge"

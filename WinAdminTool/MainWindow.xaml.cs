@@ -64,10 +64,15 @@ public sealed partial class MainWindow : Window
             return;
         }
 
-        
         if (tag == "Network")
         {
             ContentFrame.Content = new Views.NetworkPage();
+            return;
+        }
+
+        if (tag == "Shares")
+        {
+            ContentFrame.Content = new Views.SharesPage();
             return;
         }
 
