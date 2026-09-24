@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace WinAdminTool.Views;
 
@@ -219,6 +220,157 @@ public sealed partial class ToolsPage : Page
         {
             FileName = "cmd.exe",
             Arguments = "/k netsh int ip reset",
+            UseShellExecute = true
+        });
+    }
+    private void IpConfigButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k ipconfig /all",
+            UseShellExecute = true
+        });
+    }
+
+    private void PingButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k ping 8.8.8.8",
+            UseShellExecute = true
+        });
+    }
+
+    private void NslookupButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k nslookup",
+            UseShellExecute = true
+        });
+    }
+
+    private void RouteButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k route print",
+            UseShellExecute = true
+        });
+    }
+
+    private void ArpButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k arp -a",
+            UseShellExecute = true
+        });
+    }
+
+    private void NetstatButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            Arguments = "/k netstat -ano",
+            UseShellExecute = true
+        });
+    }
+    private void ServicesManagementButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "services.msc",
+            UseShellExecute = true
+        });
+    }
+
+    private void SystemConfigurationButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "msconfig.exe",
+            UseShellExecute = true
+        });
+    }
+
+    private void RegistryEditorButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "regedit.exe",
+            UseShellExecute = true
+        });
+    }
+
+    private void LocalUsersButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "lusrmgr.msc",
+            UseShellExecute = true
+        });
+    }
+
+    private void SystemRestoreButton_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "rstrui.exe",
+            UseShellExecute = true
+        });
+    }
+
+    private async void LocalSecurityPolicyButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!File.Exists(Environment.ExpandEnvironmentVariables(
+            "%SystemRoot%\\System32\\secpol.msc")))
+        {
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Nicht verfügbar",
+                Content = "Die lokale Sicherheitsrichtlinie ist in dieser Windows-Edition nicht verfügbar.",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot
+            };
+
+            await dialog.ShowAsync();
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "secpol.msc",
+            UseShellExecute = true
+        });
+    }
+
+    private async void GroupPolicyButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!File.Exists(Environment.ExpandEnvironmentVariables(
+            "%SystemRoot%\\System32\\gpedit.msc")))
+        {
+            ContentDialog dialog = new ContentDialog
+            {
+                Title = "Nicht verfügbar",
+                Content = "Der Gruppenrichtlinieneditor ist in dieser Windows-Edition nicht verfügbar.",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot
+            };
+
+            await dialog.ShowAsync();
+            return;
+        }
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "gpedit.msc",
             UseShellExecute = true
         });
     }
