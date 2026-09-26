@@ -43,7 +43,7 @@ namespace WinAdminTool.Views
             using var searcher = new ManagementObjectSearcher(
                 "SELECT DeviceID, VolumeName, FileSystem, Size, FreeSpace " +
                 "FROM Win32_LogicalDisk " +
-                "WHERE DriveType = 3");
+                "WHERE DriveType = 2 OR DriveType = 3");
 
             using var results = searcher.Get();
 
