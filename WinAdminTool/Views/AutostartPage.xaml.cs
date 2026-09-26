@@ -17,8 +17,14 @@ public sealed partial class AutostartPage : Page
     private const string DisabledAutostartRoot =
         @"Software\WinAdminTool\DisabledAutostart";
 
-    private const string DisabledStartupFolderName =
-        "WinAdminToolDisabled";
+    // Separater Speicherort für deaktivierte Autostart-Dateien.
+    // Dadurch bleibt der eigentliche Windows-Autostartordner sauber.
+    private static readonly string DisabledStartupRoot =
+        Path.Combine(
+            Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData),
+            "WinAdminTool",
+            "DisabledAutostart");
 
 
     public AutostartPage()
@@ -102,7 +108,7 @@ public sealed partial class AutostartPage : Page
             "Autostartordner",
             "Alle Benutzer");
 
-        // Deaktivierte Autostart-Ordner
+        // Deaktivierte Autostart-Dateien aus dem separaten WinAdminTool-Speicher
         AddDisabledStartupFolder(
             Environment.GetFolderPath(
                 Environment.SpecialFolder.Startup),
@@ -402,13 +408,8 @@ public sealed partial class AutostartPage : Page
     {
         try
         {
-            if (!Directory.Exists(folderPath))
-                return;
-
             string disabledFolder =
-                Path.Combine(
-                    folderPath,
-                    DisabledStartupFolderName);
+                GetDisabledStartupFolder(user);
 
             if (!Directory.Exists(disabledFolder))
                 return;
@@ -436,8 +437,24 @@ public sealed partial class AutostartPage : Page
         }
         catch
         {
-            // Nicht lesbare Ordner werden übersprungen.
+            // Nicht lesbare Bereiche werden übersprungen.
         }
+    }
+
+
+    private string GetDisabledStartupFolder(
+        string user)
+    {
+        string folderName =
+            user.Equals(
+                "Alle Benutzer",
+                StringComparison.OrdinalIgnoreCase)
+                ? "AllUsers"
+                : "CurrentUser";
+
+        return Path.Combine(
+            DisabledStartupRoot,
+            folderName);
     }
 
 
@@ -650,9 +667,7 @@ public sealed partial class AutostartPage : Page
                 return false;
 
             string disabledFolder =
-                Path.Combine(
-                    startupFolder,
-                    DisabledStartupFolderName);
+                GetDisabledStartupFolder(entry.User);
 
             Directory.CreateDirectory(disabledFolder);
 
@@ -696,6 +711,15 @@ public sealed partial class AutostartPage : Page
 
             if (File.Exists(entry.OriginalFilePath))
                 return false;
+
+            string? targetDirectory =
+                Path.GetDirectoryName(
+                    entry.OriginalFilePath);
+
+            if (string.IsNullOrWhiteSpace(targetDirectory))
+                return false;
+
+            Directory.CreateDirectory(targetDirectory);
 
             File.Move(
                 entry.DisabledFilePath,
